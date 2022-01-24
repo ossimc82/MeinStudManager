@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MeinStudManager.Data;
+using MeinStudManager.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MeinStudManager.Controllers;
 
@@ -12,15 +14,19 @@ public class WeatherForecastController : ControllerBase
     };
 
     private readonly ILogger<WeatherForecastController> _logger;
+    private readonly ApplicationDbContext _db;
 
-    public WeatherForecastController(ILogger<WeatherForecastController> logger)
+    public WeatherForecastController(ILogger<WeatherForecastController> logger, ApplicationDbContext db)
     {
         _logger = logger;
+        _db = db;
     }
 
     [HttpGet]
     public IEnumerable<WeatherForecast> Get()
     {
+        _db.Find(typeof(ApplicationUser), Guid.NewGuid().ToString());
+
         return Enumerable.Range(1, 5).Select(index => new WeatherForecast
         {
             Date = DateTime.Now.AddDays(index),
