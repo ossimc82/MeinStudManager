@@ -28,7 +28,7 @@ namespace MeinStudManager.Authorization
             return new List<Claim>
             {
                 new (ClaimTypes.Name, user.UserName)
-            }; ;
+            };
         }
 
         public JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials, List<Claim> claims)

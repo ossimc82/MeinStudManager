@@ -79,7 +79,7 @@ namespace MeinStudManager
             });
 
             var jwtSettings = Configuration.GetSection("JwtSettings");
-
+            var jwtHandler = new MsmJwtSecurityTokenHandler();
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -97,14 +97,17 @@ namespace MeinStudManager
                     IssuerSigningKey =
                         new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.GetSection("securityKey").Value))
                 };
+                options.SecurityTokenValidators.Clear();
+                options.SecurityTokenValidators.Add(jwtHandler);
             });
 
-            services.AddScoped<JwtHandler>();
+            services.AddSingleton(jwtHandler);
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             //Add other services here
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApplicationDbContext dbContext)
+        public void Configure(IApplicationBuilder app, IServiceProvider serviceProvider, IWebHostEnvironment env, ApplicationDbContext dbContext)
         {
             dbContext.Database.Migrate();
 
@@ -126,6 +129,9 @@ namespace MeinStudManager
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            var jwtHandler = serviceProvider.GetService<MsmJwtSecurityTokenHandler>()!;
+            jwtHandler.Configure(serviceProvider);
 
             app.UseAuthentication();
             app.UseAuthorization();
