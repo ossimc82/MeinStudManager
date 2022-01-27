@@ -53,7 +53,10 @@ namespace MeinStudManager.Controllers
             var result = await userManager.CreateAsync(user, formData.Password);
 
             if (result.Succeeded)
+            {
+                await userManager.AddToRoleAsync(user, RoleHelper.Role_Students);
                 return StatusCode(StatusCodes.Status201Created, user.Id);
+            }
 
             var problem = ProblemDetailsFactory.CreateProblemDetails(HttpContext,
                 StatusCodes.Status400BadRequest, "Could not create user.",
@@ -79,7 +82,8 @@ namespace MeinStudManager.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Login([FromBody] UserLoginDto formData)
         {
-            var user = await userManager.FindByEmailAsync(formData.Email);
+            var user = await userManager.FindByEmailAsync(formData.Ident) ??
+                       await userManager.FindByNameAsync(formData.Ident);
 
             if (user == null || !await userManager.CheckPasswordAsync(user, formData.Password))
                 return Unauthorized("Incorrect email or password");

@@ -34,6 +34,7 @@ namespace MeinStudManager
 
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
                     options.User.RequireUniqueEmail = true)
+                .AddRoleManager<RoleManager<IdentityRole>>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddControllersWithViews();
@@ -143,6 +144,36 @@ namespace MeinStudManager
                     pattern: "{controller}/{action=Index}/{id?}");
                 endpoints.MapFallbackToFile("index.html");
             });
+            
+            //Create a default admin user
+            var userManager = serviceProvider.GetService<UserManager<ApplicationUser>>()!;
+            if (userManager.Users.Any())
+                return;
+
+            var roleManager = serviceProvider.GetService<RoleManager<IdentityRole>>()!;
+
+            var user = new ApplicationUser
+            {
+                Email = "admin@admin.com",
+                EmailConfirmed = true,
+                UserName = "admin"
+            };
+
+            Task.Run(async () =>
+            {
+                var results = new[]
+                {
+                    await userManager.CreateAsync(user, "Admin.69"),
+                    await roleManager.CreateAsync(new IdentityRole(RoleHelper.Role_Administrators)),
+                    await roleManager.CreateAsync(new IdentityRole(RoleHelper.Role_Moderators)),
+                    await roleManager.CreateAsync(new IdentityRole(RoleHelper.Role_Students))
+                };
+
+                if (!results.All(x => x.Succeeded))
+                    return;
+
+                await userManager.AddToRoleAsync(user, RoleHelper.Role_Administrators);
+            }).Wait();
         }
     }
 }
