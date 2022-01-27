@@ -1,0 +1,20 @@
+
+.btn-primary {
+  margin: 5px;
+}
+
+.more-margin {
+  margin: 50px;
+}
+ .container {
+  padding-top: 200px;
+ }
+ .custom-border {
+   border-color: black;
+   border-style: solid;
+   padding: 5px;
+ }
+ h3 {
+   margin-top: 20px;
+ }
+
