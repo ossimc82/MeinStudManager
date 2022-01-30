@@ -1,0 +1,21 @@
+.custom-wrapper {
+  height: 100vh;
+  background-color: aqua;
+}
+
+.custom-padding {
+  padding-top: 100px;
+}
+
+.custom-border {
+  border-color: black;
+  border-style: solid;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+
+input.ng-invalid.ng-touched {
+  border: 1px solid red;
+}
+
