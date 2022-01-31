@@ -61,7 +61,7 @@ namespace MeinStudManager.Controllers
             var problem = ProblemDetailsFactory.CreateProblemDetails(HttpContext,
                 StatusCodes.Status400BadRequest, "Could not create user.",
                 "https://tools.ietf.org/html/rfc7231#section-6.5.1");
-            problem.Extensions.Add("errors", result.Errors.ToDictionary(_ => _.Code, _ => new [] { _.Description }));
+            problem.Extensions.Add("errors", result.Errors.ToDictionary(_ => _.Code, _ => new[] { _.Description }));
 
             return BadRequest(problem);
         }
@@ -76,9 +76,9 @@ namespace MeinStudManager.Controllers
         /// <response code="401">If the user credentials are incorrect.</response>
         /// <response code="500">If something very critical goes wrong in the server backend.</response>
         [HttpPost("login")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = null!)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(LoginResultDto))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(LoginResultDto))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Login([FromBody] UserLoginDto formData)
         {
@@ -86,10 +86,19 @@ namespace MeinStudManager.Controllers
                        await userManager.FindByNameAsync(formData.Ident);
 
             if (user == null || !await userManager.CheckPasswordAsync(user, formData.Password))
-                return Unauthorized("Incorrect email or password");
+                return Unauthorized(new LoginResultDto
+                {
+                    IsAuthSuccessful = false,
+                    ErrorMessage = "Incorrect email or password"
+                });
 
             var token = await jwt.SignInUser(db, user);
-            return Ok(token);
+            return Ok(new LoginResultDto
+            {
+                IsAuthSuccessful = true,
+                ErrorMessage = null,
+                Token = token
+            });
         }
 
         /// <summary>
