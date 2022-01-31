@@ -105,6 +105,16 @@ namespace MeinStudManager
             services.AddSingleton(jwtHandler);
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             //Add other services here
+            
+            // Add Cors to acces endpoints with Angular
+            services.AddCors(options =>
+            {
+             options.AddDefaultPolicy(builder =>
+             {
+            builder.WithOrigins("https://localhost:44449").AllowAnyHeader();
+             });
+            });
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -130,6 +140,7 @@ namespace MeinStudManager
             app.UseStaticFiles();
 
             app.UseRouting();
+            app.UseCors();
 
             var jwtHandler = serviceProvider.GetService<MsmJwtSecurityTokenHandler>()!;
             jwtHandler.Configure(serviceProvider);
