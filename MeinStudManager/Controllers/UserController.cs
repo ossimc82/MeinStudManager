@@ -3,6 +3,7 @@ using System.Security.AccessControl;
 using System.Security.Claims;
 using MeinStudManager.Authorization;
 using MeinStudManager.Data;
+using MeinStudManager.Extensions;
 using MeinStudManager.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -55,7 +56,7 @@ namespace MeinStudManager.Controllers
             if (result.Succeeded)
             {
                 await userManager.AddToRoleAsync(user, RoleHelper.Role_Students);
-                return StatusCode(StatusCodes.Status201Created, user.Id);
+                return StatusCode(StatusCodes.Status201Created, user.Id).AsJson();
             }
 
             var problem = ProblemDetailsFactory.CreateProblemDetails(HttpContext,
@@ -89,7 +90,7 @@ namespace MeinStudManager.Controllers
                 return Unauthorized(new LoginResultDto
                 {
                     IsAuthSuccessful = false,
-                    ErrorMessage = "Incorrect email or password"
+                    ErrorMessage = "Incorrect email/username or password"
                 });
 
             var token = await jwt.SignInUser(db, user);
@@ -97,6 +98,7 @@ namespace MeinStudManager.Controllers
             {
                 IsAuthSuccessful = true,
                 ErrorMessage = null,
+                UserId = user.Id,
                 Token = token
             });
         }
