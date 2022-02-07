@@ -13,6 +13,8 @@ import { AuthComponent } from './auth/auth.component';
 import { RegisterComponent } from './auth/register/register.component';
 import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinner.component';
 import { AuthInterceptorService } from './auth/auth-interceptor.service';
+import { PlannerComponent } from './planner/planner/planner.component';
+import { ScheduleModule } from '@syncfusion/ej2-angular-schedule';
 
 
 
@@ -25,14 +27,16 @@ import { AuthInterceptorService } from './auth/auth-interceptor.service';
     ProfileComponent,
     AuthComponent,
     RegisterComponent,
-    LoadingSpinnerComponent
+    LoadingSpinnerComponent,
+    PlannerComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
-    AppRoutingModule
+    AppRoutingModule,
+    ScheduleModule
   ],
   providers: [{provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true}],
   bootstrap: [AppComponent]
