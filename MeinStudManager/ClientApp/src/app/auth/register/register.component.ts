@@ -54,7 +54,6 @@ export class RegisterComponent implements OnInit {
       errorRes => {
       this.showError = true;
       this.errorArray = Object.values(errorRes.error.errors);
-      console.log(this.errorArray); //
       this.isLoading = false;
     });
 

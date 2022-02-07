@@ -26,13 +26,11 @@ export class AuthComponent implements OnInit {
   }
 
   onSubmit() {
-    console.log(this.loginForm.value);
     const ident = this.loginForm.value.ident;
     const password = this.loginForm.value.password;
     this.isLoading = true;
     this.authService.login(ident,password).subscribe(
       resData => {
-        console.log(resData);
         this.isLoading = false;
         this.router.navigate(['']);
     }, errorRes => {
