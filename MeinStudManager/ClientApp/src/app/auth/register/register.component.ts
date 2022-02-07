@@ -11,9 +11,15 @@ import { UserRegisterData } from '../user-register-data.model';
 })
 export class RegisterComponent implements OnInit {
 
-registerForm: FormGroup = new FormGroup({});
+  registerForm: FormGroup = new FormGroup({});
+  isLoading = false;
+  errorMessage = '';
+  showError = false;
+  errorArray = [];
 
-  constructor(private router: Router, private authService: AuthService) { }
+
+  constructor(private router: Router,
+              private authService: AuthService) { }
 
   ngOnInit(): void {
     this.registerForm = new FormGroup({
@@ -27,7 +33,6 @@ registerForm: FormGroup = new FormGroup({});
   }
 
   onSubmit() {
-
       const userData : UserRegisterData = {
         userName : this.registerForm.value.userName,
         firstName : this.registerForm.value.firstName,
@@ -37,12 +42,20 @@ registerForm: FormGroup = new FormGroup({});
         confirmPassword : this.registerForm.value.confirmPassword
        }
 
+      this.isLoading = true;
+      this.authService.signup(userData).subscribe(res => {
 
-    this.authService.signup(userData).subscribe(_ => {
-      console.log("Successful registration");
+      console.log("Successful registration: ");
+      console.log(res);
+
+      this.router.navigate(['login']);
+      this.isLoading = false;
     },
-      error => {
-      console.log(error.error.errors);
+      errorRes => {
+      this.showError = true;
+      this.errorArray = Object.values(errorRes.error.errors);
+      console.log(this.errorArray); //
+      this.isLoading = false;
     });
 
   }

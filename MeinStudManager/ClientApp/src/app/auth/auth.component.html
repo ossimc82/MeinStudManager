@@ -18,7 +18,10 @@
           </div>
 
             <div class="col-5">
-              <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="custom-border">
+              <div *ngIf="isLoading" style="text-align: center; padding-top: 50px;">
+                <app-loading-spinner></app-loading-spinner>
+              </div>
+              <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="custom-border" *ngIf="!isLoading">
                 <div class="row">
                   <h3>Login</h3>
                  </div>
@@ -46,10 +49,16 @@
                     <button class="btn btn-primary" (click)="onRegister()">Register</button>
                    </div>
               </form>
+
+              <div *ngIf="error" style="text-align: center;">
+                <div>{{errorMessage}} !</div>
+              </div>
+
             </div>
 
         </div>
       </div>
+
     </div>
   </div>
 

@@ -11,6 +11,10 @@ import { AuthService } from "./auth.service";
 export class AuthComponent implements OnInit {
 
   loginForm: FormGroup = new FormGroup({});
+  isLoading = false;
+  error = false;
+  errorMessage = '';
+
 
   constructor(private router: Router, private authService: AuthService) {}
 
@@ -25,11 +29,16 @@ export class AuthComponent implements OnInit {
     console.log(this.loginForm.value);
     const ident = this.loginForm.value.ident;
     const password = this.loginForm.value.password;
+    this.isLoading = true;
     this.authService.login(ident,password).subscribe(
       resData => {
         console.log(resData);
-    }, error => {
-      console.log(error);
+        this.isLoading = false;
+        this.router.navigate(['']);
+    }, errorRes => {
+      this.error = true;
+      this.errorMessage = 'Passwort oder Email nicht richtig';
+      this.isLoading = false;
     });
 
   }

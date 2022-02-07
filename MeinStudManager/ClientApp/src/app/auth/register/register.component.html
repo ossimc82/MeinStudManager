@@ -5,7 +5,10 @@
     <div class="row justify-content-center">
       <div class="col-12 col-md-4">
         <h2 class="text-center">Register</h2>
-        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="custom-border">
+        <div *ngIf="isLoading" style="text-align: center;">
+          <app-loading-spinner></app-loading-spinner>
+        </div>
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="custom-border" *ngIf="!isLoading">
 
           <div class="row mb-3" >
             <label for="username" class="col-sm-6 col-form-label">Username</label>
@@ -90,8 +93,9 @@
           </div>
 
 
-
         </form>
+
+        <div class="error-message" *ngFor="let item of errorArray"> {{item}} </div>
 
       </div>
 
