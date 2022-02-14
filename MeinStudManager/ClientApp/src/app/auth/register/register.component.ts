@@ -45,8 +45,10 @@ export class RegisterComponent implements OnInit {
       this.isLoading = true;
       this.authService.signup(userData).subscribe(res => {
 
-      console.log("Successful registration: ");
+      window.confirm("registration successful - please log in");
       console.log(res);
+
+
 
       this.router.navigate(['login']);
       this.isLoading = false;
