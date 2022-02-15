@@ -48,7 +48,9 @@ namespace MeinStudManager.Controllers
             var user = new ApplicationUser
             {
                 Email = formData.Email,
-                UserName = formData.UserName
+                UserName = formData.UserName,
+                FirstName = formData.FirstName,
+                LastName = formData.LastName
             };
 
             var result = await userManager.CreateAsync(user, formData.Password);
@@ -93,7 +95,7 @@ namespace MeinStudManager.Controllers
                     ErrorMessage = "Incorrect email/username or password"
                 });
 
-            var token = await jwt.SignInUser(db, user);
+            var token = await jwt.SignInUser(db, user, await userManager.GetRolesAsync(user));
             return Ok(new LoginResultDto
             {
                 IsAuthSuccessful = true,
@@ -117,10 +119,7 @@ namespace MeinStudManager.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Logout()
         {
-            var user = await userManager.FindByNameAsync(HttpContext.User.Identity?.Name);
-            if (user == null) //should not happen here
-                return Unauthorized();
-
+            var user = await userManager.FindByIdentity(User.Identity);
             await jwt.SignOutUser(db, user);
             return Ok();
         }

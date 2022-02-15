@@ -23,15 +23,15 @@ namespace MeinStudManager.Authorization
             return new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256);
         }
 
-        public List<Claim> GetClaims(IdentityUser user)
+        public IEnumerable<Claim> GetClaims(IdentityUser user, IEnumerable<string> roles)
         {
-            return new List<Claim>
+            return new Claim[]
             {
                 new (ClaimTypes.Name, user.UserName)
-            };
+            }.Concat(roles.Select(_ => new Claim(ClaimTypes.Role, _)));
         }
 
-        public JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials, List<Claim> claims)
+        public JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials, IEnumerable<Claim> claims)
         {
             return new JwtSecurityToken(
                 issuer: jwtSettings.GetSection("validIssuer").Value,

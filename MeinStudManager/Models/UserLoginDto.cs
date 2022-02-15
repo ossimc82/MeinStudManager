@@ -5,8 +5,8 @@ namespace MeinStudManager.Models
     public class UserLoginDto
     {
         [Required(ErrorMessage = "Either Email or Username is required")]
-        public string Ident { get; set; }
+        public string Ident { get; set; } = default!;
         [Required(ErrorMessage = "Password is required.")]
-        public string Password { get; set; }
+        public string Password { get; set; } = default!;
     }
 }

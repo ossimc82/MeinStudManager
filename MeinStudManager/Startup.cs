@@ -34,6 +34,7 @@ namespace MeinStudManager
 
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
                     options.User.RequireUniqueEmail = true)
+                .AddRoles<IdentityRole>()
                 .AddRoleManager<RoleManager<IdentityRole>>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 

@@ -10,9 +10,9 @@ namespace MeinStudManager.Authorization
     public class MsmJwtSecurityTokenHandler : ISecurityTokenValidator
     {
         private readonly JwtSecurityTokenHandler tokenHandler;
-        private IHttpContextAccessor httpContextAccessor;
-        private IServiceProvider serviceProvider;
-        private JwtHandler jwtHandler;
+        private IHttpContextAccessor httpContextAccessor = null!;
+        private IServiceProvider serviceProvider = null!;
+        private JwtHandler jwtHandler = null!;
 
         public MsmJwtSecurityTokenHandler()
         {
@@ -53,10 +53,10 @@ namespace MeinStudManager.Authorization
             return tokenHandler.ValidateToken(securityToken, validationParameters, out validatedToken);
         }
 
-        public async Task<string> SignInUser(ApplicationDbContext db, ApplicationUser user)
+        public async Task<string> SignInUser(ApplicationDbContext db, ApplicationUser user, IEnumerable<string> roles)
         {
             var signingCredentials = jwtHandler.GetSigningCredentials();
-            var claims = jwtHandler.GetClaims(user);
+            var claims = jwtHandler.GetClaims(user, roles);
             var tokenOptions = jwtHandler.GenerateTokenOptions(signingCredentials, claims);
             var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
             user.SecurityToken = token;
