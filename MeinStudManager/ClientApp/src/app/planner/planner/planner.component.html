@@ -1,2 +1,4 @@
-<p>planner works!</p>
-<ejs-schedule #scheduleObj [eventSettings]='eventSettings' (eventRendered)="onEventRendered($event)"></ejs-schedule>
+<ejs-schedule #scheduleObj [eventSettings]='eventSettings'
+  (eventRendered)="onEventRendered($event)"
+  (popupOpen)='onPopupOpen($event)'
+  ></ejs-schedule>

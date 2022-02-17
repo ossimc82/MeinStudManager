@@ -15,6 +15,7 @@
 @import '../node_modules/@syncfusion/ej2-popups/styles/material.css';
 @import '../node_modules/@syncfusion/ej2-navigations/styles/material.css';
 @import '../node_modules/@syncfusion/ej2-angular-schedule/styles/material.css';
+@import '../src/app/planner/planner/custom-ej2-angular-schedule.css'; /* Necessary, because dynamic Elements of the Schedule will be generated in the BODY, not in the App-Component */
 
 
 

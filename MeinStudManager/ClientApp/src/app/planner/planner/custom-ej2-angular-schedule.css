@@ -1,0 +1,7 @@
+/* Will be loaded globally in styles.css */
+
+.custom-ej2-category-lecturer-row {
+  display: flex;
+  padding-bottom: 12px;
+  width: 100%;
+}
