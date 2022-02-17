@@ -142,7 +142,7 @@ export class PlannerComponent implements OnInit {
             this.lecturerTextBox.value = (<{ [key: string]: Object }>(args.data)).dozent as string;
           }
           else{
-            this.lecturerTextBox.value = "test";
+            this.lecturerTextBox.value = "";
           }
 
           console.log(this.categoryDropDown)
