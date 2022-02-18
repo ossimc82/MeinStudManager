@@ -1,9 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { DayService, WeekService, WorkWeekService, MonthService, AgendaService, MonthAgendaService, TimelineViewsService, TimelineMonthService, EventSettingsModel, EventRenderedArgs, ScheduleComponent, PopupOpenEventArgs } from '@syncfusion/ej2-angular-schedule';
+import { DayService, WeekService, WorkWeekService, MonthService, AgendaService, MonthAgendaService, TimelineViewsService, TimelineMonthService, EventSettingsModel, EventRenderedArgs, ScheduleComponent, PopupOpenEventArgs, ActionEventArgs } from '@syncfusion/ej2-angular-schedule';
 import { timeTableData } from './timeTable-data.model';
 import { createElement } from '@syncfusion/ej2-base';
 import { DropDownList } from '@syncfusion/ej2-dropdowns';
-import { TextBox, TextBoxModel } from '@syncfusion/ej2-inputs'
+import { TextBox } from '@syncfusion/ej2-inputs'
+import { PlannerService } from './planner.service'
 
 @Component({
   selector: 'app-planner',
@@ -12,7 +13,7 @@ import { TextBox, TextBoxModel } from '@syncfusion/ej2-inputs'
 })
 
 export class PlannerComponent implements OnInit {
-  constructor() { }
+  constructor(public plannerService: PlannerService) { }
 
   @ViewChild('scheduleObj') public scheduleObj: ScheduleComponent;
   public data: object[] = [];
@@ -66,6 +67,7 @@ export class PlannerComponent implements OnInit {
         isBlock: 'isBlock'
       }
     };
+    this.fetchEvents(1);
   }
 
   onEventRendered(args: EventRenderedArgs): void {
@@ -156,5 +158,34 @@ export class PlannerComponent implements OnInit {
           }
         }
     }
+  }
+
+  onActionBegin(args: ActionEventArgs): void { //When Data has been added / changed, or Date has been changed
+    console.log("req Type: " , args.requestType)
+    if(args.requestType === 'eventCreate') { //event create
+      console.log("event create", args.addedRecords);
+      this.plannerService.addEvent(<timeTableData>args.addedRecords[0]).subscribe((res: timeTableData ) => { //need the ID Back
+        args.addedRecords[0] = res;
+      });
+    }
+    else if (args.requestType === 'eventChange') { //event update
+      console.log("event edit", args.changedRecords);
+      this.plannerService.updateEvent(args.changedRecords[0].id, <timeTableData>args.changedRecords[0]) //No more action required?
+    }
+    else if (args.requestType === 'eventRemove') { //event remove
+      console.log("event deleted", args.addedRecords);
+      this.plannerService.deleteEvent(args.addedRecords[0].id) //No more action required?
+    }
+
+
+    if(args.requestType === 'dateNavigate'){
+      this.fetchEvents(1)
+    }
+  }
+
+  fetchEvents(semester: number){
+    this.plannerService.getEvents(semester).subscribe((res: timeTableData[]) => {
+      this.data = res;
+    });
   }
 }

@@ -15,6 +15,7 @@ import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinne
 import { AuthInterceptorService } from './auth/auth-interceptor.service';
 import { PlannerComponent } from './planner/planner/planner.component';
 import { ScheduleModule } from '@syncfusion/ej2-angular-schedule';
+import { PlannerService } from './planner/planner/planner.service';
 
 
 
@@ -38,7 +39,8 @@ import { ScheduleModule } from '@syncfusion/ej2-angular-schedule';
     AppRoutingModule,
     ScheduleModule
   ],
-  providers: [{provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true}],
+  providers: [{provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true},
+    PlannerService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
