@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { DayService, WeekService, WorkWeekService, MonthService, AgendaService, MonthAgendaService, TimelineViewsService, TimelineMonthService, EventSettingsModel, EventRenderedArgs, ScheduleComponent, PopupOpenEventArgs, ActionEventArgs } from '@syncfusion/ej2-angular-schedule';
+import { DayService, WeekService, WorkWeekService, MonthService, AgendaService, MonthAgendaService, TimelineViewsService, TimelineMonthService, EventSettingsModel, EventRenderedArgs, ScheduleComponent, PopupOpenEventArgs, ActionEventArgs, actionBegin } from '@syncfusion/ej2-angular-schedule';
 import { timeTableData } from './timeTable-data.model';
 import { createElement } from '@syncfusion/ej2-base';
 import { DropDownList } from '@syncfusion/ej2-dropdowns';
@@ -23,8 +23,8 @@ export class PlannerComponent implements OnInit {
       subject: 'Mathe 1',
       description: 'learn how to transponieren with GERD',
       location: "H0018",
-      startTime: new Date(2022, 1, 16, 10, 0), //Month starts at 0
-      endTime: new Date(2022, 1, 16, 11, 30),
+      startTime: new Date(2022, 1, 16, 8, 15), //Month starts at 0
+      endTime: new Date(2022, 1, 16, 9, 45),
       color: "#1111EE",
       dozent: "gerd",
       category: 'leisure'
@@ -52,7 +52,6 @@ export class PlannerComponent implements OnInit {
 
 
   ngOnInit(): void {
-    this.data = this.testData;
     this.eventSettings = {
       dataSource: this.data,
       fields: {
@@ -67,10 +66,9 @@ export class PlannerComponent implements OnInit {
         isBlock: 'isBlock'
       }
     };
-    this.fetchEvents(1);
   }
 
-  onEventRendered(args: EventRenderedArgs): void {
+  onEventRendered(args: EventRenderedArgs): void { //mostly to set color
     let color: string = args.data.color as string;
     if (!args.element || !color) {
         return;
@@ -81,14 +79,13 @@ export class PlannerComponent implements OnInit {
         args.element.style.backgroundColor = color;
     }
 
-    let dozent: string = args.data.dozent as string;
-    if(dozent){
-      console.log(dozent)
-
-    }
+//    let dozent: string = args.data.dozent as string;
+//    if(dozent){
+//      console.log(dozent)
+//    }
   }
 
-  onPopupOpen(args: PopupOpenEventArgs): void {
+  onPopupOpen(args: PopupOpenEventArgs): void { //Set custom Elements into the Event Configurator
     if (args.type === 'Editor') {
         // Create required custom elements in initial time
         if (!args.element.querySelector('.custom-ej2-category-lecturer-row')) { //if doesn't exist yet, generate
@@ -136,9 +133,7 @@ export class PlannerComponent implements OnInit {
           row.appendChild(container2)
         }
 
-        if (args.element.querySelector('.custom-ej2-category-lecturer-row')){ //if already exists (also right after generation), fill values
-
-          console.log("Set data", args.data)
+        if (args.element.querySelector('.custom-ej2-category-lecturer-row')){ //if a category-lecturer row exists, fill it with values
 
           if(args.data.dozent){
             this.lecturerTextBox.value = (<{ [key: string]: Object }>(args.data)).dozent as string;
@@ -146,9 +141,6 @@ export class PlannerComponent implements OnInit {
           else{
             this.lecturerTextBox.value = "";
           }
-
-          console.log(this.categoryDropDown)
-          console.log(this.lecturerTextBox)
 
           if(!args.data.category || args.data.category == ""){
             this.categoryDropDown.value = "";
@@ -160,32 +152,103 @@ export class PlannerComponent implements OnInit {
     }
   }
 
-  onActionBegin(args: ActionEventArgs): void { //When Data has been added / changed, or Date has been changed
-    console.log("req Type: " , args.requestType)
+  onActionBegin(args: ActionEventArgs): void { //When Data is added / changed, or Date has been changed
     if(args.requestType === 'eventCreate') { //event create
-      console.log("event create", args.addedRecords);
-      this.plannerService.addEvent(<timeTableData>args.addedRecords[0]).subscribe((res: timeTableData ) => { //need the ID Back
-        args.addedRecords[0] = res;
-      });
+      this.createEvent(<timeTableData>args.addedRecords[0])
     }
     else if (args.requestType === 'eventChange') { //event update
-      console.log("event edit", args.changedRecords);
-      this.plannerService.updateEvent(args.changedRecords[0].id, <timeTableData>args.changedRecords[0]) //No more action required?
+      this.changeEvent(<timeTableData>args.changedRecords[0])
     }
     else if (args.requestType === 'eventRemove') { //event remove
-      console.log("event deleted", args.addedRecords);
-      this.plannerService.deleteEvent(args.addedRecords[0].id) //No more action required?
+      this.deleteEvent(<timeTableData>args.deletedRecords[0])
     }
-
-
-    if(args.requestType === 'dateNavigate'){
-      this.fetchEvents(1)
+    if(args.requestType === 'toolbarItemRendering'){ //initializing
+      this.getEvents()
     }
   }
 
-  fetchEvents(semester: number){
-    this.plannerService.getEvents(semester).subscribe((res: timeTableData[]) => {
-      this.data = res;
-    });
+  onActionComplete(args: ActionEventArgs): void { //When changes are completed
+    if(args.requestType === 'dateNavigate'){ //actualizing Data according to the selected Date
+      this.getEvents()
+    }
+  }
+
+  /** Calculates the proper Date-range that needs to be called (Winter or Summer Semester),
+  and then fetches Data from the Server.*/
+  getEvents(){
+    let now = new Date();
+    let begin = new Date();
+    let end = new Date();
+
+    if(this.scheduleObj.getCurrentViewDates().length > 0){ //wenn noch kein Schedule vorhanden
+      let currentViewDates: Date[] = this.scheduleObj.getCurrentViewDates() as Date[];
+      now = currentViewDates[0] as Date; //beginning of calender is seen as "now"
+    }
+
+    if(now.getMonth() > 2 && now.getMonth() < 9){ //Sommersemester
+      begin.setMonth(2, 20)
+      end.setMonth(9, 10)
+    }
+    else{ //Wintersemster
+      begin.setMonth(8, 20)
+      end.setMonth(3, 10)
+      if(now.getMonth() >= 9 ){
+        end.setFullYear(now.getFullYear() + 1)
+      }
+      else{
+        begin.setFullYear(now.getFullYear() - 1)
+        end.setFullYear(now.getFullYear())
+      }
+    }
+    this.fetchEvents(begin, end);
+  }
+
+  previousStartDate: Date = new Date();
+
+  fetchEvents(calendarStartDate: Date, calendarEndDate: Date){
+
+    var compareStartDate = new Date(calendarStartDate)
+    compareStartDate.setHours(0,0,0,0);
+
+    if(this.previousStartDate != compareStartDate){ //check if semester isnt loaded already
+      this.previousStartDate = compareStartDate;
+      console.log("Last:" , this.previousStartDate)
+      console.log("SENDING FROM: ", calendarStartDate)
+      console.log("SENDING TO: ", calendarEndDate)
+
+      this.plannerService.getEvents(calendarStartDate, calendarEndDate).subscribe((res: timeTableData[]) => {
+        this.scheduleObj.eventSettings.dataSource = res;
+      }, (error: any) => {
+        this.scheduleObj.eventSettings.dataSource = this.testData;
+        }
+      );
+    }
+  }
+
+  createEvent(newEvent: timeTableData){
+    this.plannerService.addEvent(newEvent).subscribe((res: timeTableData ) => {
+      this.getEvents()
+    }, (error: any) => {
+      //...
+      }
+    );
+  }
+
+  changeEvent(changedEvent: timeTableData){
+    this.plannerService.updateEvent(changedEvent).subscribe((res: {}) => {
+      this.getEvents()
+    }, (error: any) => {
+      //...
+      }
+    );
+  }
+
+  deleteEvent(eventToDelete: timeTableData){
+    this.plannerService.deleteEvent(eventToDelete.id).subscribe((res: {}) => {
+      this.getEvents()
+    }, (error: any) => {
+      //...
+      }
+    );
   }
 }
