@@ -23,8 +23,8 @@ export class PlannerComponent implements OnInit {
       subject: 'Mathe 1',
       description: 'learn how to transponieren with GERD',
       location: "H0018",
-      startTime: new Date(2022, 1, 16, 8, 15), //Month starts at 0
-      endTime: new Date(2022, 1, 16, 9, 45),
+      startTime: new Date(2022, 3, 16, 8, 15), //Month starts at 0
+      endTime: new Date(2022, 3, 16, 9, 45),
       color: "#1111EE",
       dozent: "gerd",
       category: 'leisure'
@@ -32,8 +32,8 @@ export class PlannerComponent implements OnInit {
     {id: "0f8fad5b-d9cb-469f-a165-70867728950a",
       subject: 'GWT',
       description: 'Hardest Module u will ever visit',
-      startTime: new Date(2022, 1, 16, 11, 45),
-      endTime: new Date(2022, 1, 16, 13, 15),
+      startTime: new Date(2022, 3, 16, 11, 45),
+      endTime: new Date(2022, 3, 16, 13, 15),
       color: '#bb2222',
       recurrenceRule : 'FREQ=DAILY;INTERVAL=2;COUNT=8;',
       dozent: "brothuhn",
@@ -42,8 +42,8 @@ export class PlannerComponent implements OnInit {
     {id: "0f8fad5b-d9cb-469f-a165-70867728950b",
       subject: 'DBS V3',
       description: 'Datenbanksysteme DLC Content',
-      startTime: new Date(2022, 1, 16, 14, 15),
-      endTime: new Date(2022, 1, 16, 15, 45),
+      startTime: new Date(2022, 3, 16, 14, 15),
+      endTime: new Date(2022, 3, 16, 15, 45),
       color: '#00bb22'
     }
   ];
@@ -163,7 +163,7 @@ export class PlannerComponent implements OnInit {
       this.deleteEvent(<timeTableData>args.deletedRecords[0])
     }
     if(args.requestType === 'toolbarItemRendering'){ //initializing
-      this.getEvents()
+      this.getEvents(true)
     }
   }
 
@@ -175,14 +175,14 @@ export class PlannerComponent implements OnInit {
 
   /** Calculates the proper Date-range that needs to be called (Winter or Summer Semester),
   and then fetches Data from the Server.*/
-  getEvents(){
+  getEvents(forceRequest: boolean = false){
     let now = new Date();
     let begin = new Date();
     let end = new Date();
 
     if(this.scheduleObj.getCurrentViewDates().length > 0){ //wenn noch kein Schedule vorhanden
       let currentViewDates: Date[] = this.scheduleObj.getCurrentViewDates() as Date[];
-      now = currentViewDates[0] as Date; //beginning of calender is seen as "now"
+      now = currentViewDates[Math.round((currentViewDates.length - 1) / 2)] as Date; //middle of calender is seen as "now"
     }
 
     if(now.getMonth() > 2 && now.getMonth() < 9){ //Sommersemester
@@ -200,22 +200,18 @@ export class PlannerComponent implements OnInit {
         end.setFullYear(now.getFullYear())
       }
     }
-    this.fetchEvents(begin, end);
+    this.fetchEvents(begin, end, forceRequest);
   }
 
   previousStartDate: Date = new Date();
 
-  fetchEvents(calendarStartDate: Date, calendarEndDate: Date){
-
+  fetchEvents(calendarStartDate: Date, calendarEndDate: Date, forceRequest: boolean){
     var compareStartDate = new Date(calendarStartDate)
     compareStartDate.setHours(0,0,0,0);
-
-    if(this.previousStartDate != compareStartDate){ //check if semester isnt loaded already
+    if((this.previousStartDate.getTime() != compareStartDate.getTime()) || forceRequest){ //check if semester isnt loaded already (Or force request)
       this.previousStartDate = compareStartDate;
-      console.log("Last:" , this.previousStartDate)
-      console.log("SENDING FROM: ", calendarStartDate)
-      console.log("SENDING TO: ", calendarEndDate)
-
+//    console.log("SENDING FROM: ", calendarStartDate)
+//    console.log("SENDING TO: ", calendarEndDate)
       this.plannerService.getEvents(calendarStartDate, calendarEndDate).subscribe((res: timeTableData[]) => {
         this.scheduleObj.eventSettings.dataSource = res;
       }, (error: any) => {
@@ -227,7 +223,7 @@ export class PlannerComponent implements OnInit {
 
   createEvent(newEvent: timeTableData){
     this.plannerService.addEvent(newEvent).subscribe((res: timeTableData ) => {
-      this.getEvents()
+      this.getEvents(true)
     }, (error: any) => {
       //...
       }
@@ -236,7 +232,7 @@ export class PlannerComponent implements OnInit {
 
   changeEvent(changedEvent: timeTableData){
     this.plannerService.updateEvent(changedEvent).subscribe((res: {}) => {
-      this.getEvents()
+      this.getEvents(true)
     }, (error: any) => {
       //...
       }
@@ -245,7 +241,7 @@ export class PlannerComponent implements OnInit {
 
   deleteEvent(eventToDelete: timeTableData){
     this.plannerService.deleteEvent(eventToDelete.id).subscribe((res: {}) => {
-      this.getEvents()
+      this.getEvents(true)
     }, (error: any) => {
       //...
       }
