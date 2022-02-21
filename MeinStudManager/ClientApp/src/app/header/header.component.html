@@ -8,11 +8,11 @@
 
     <ul >
       <li routerLinkActive="active-link"
-      [routerLinkActiveOptions]="{exact: true}"
+
        class="nav-item active" >
-        <a class="nav-link" routerLink="/" >Home</a>
+        <a class="nav-link" routerLink="/home" >Home</a>
       </li>
-      <li class="nav-item active">
+      <li routerLinkActive="active-link" class="nav-item active">
         <a class="nav-link" routerLink="/planner">Planer</a>
       </li>
       <li class="nav-item active">
@@ -25,6 +25,6 @@
         <a class="nav-link" href="#">Chat</a>
       </li>
       <li routerLinkActive="active-link" class="nav-item active">
-        <a class="nav-link" routerLink="/profile">Profil</a>
+        <a class="nav-link" routerLink="/profile/settings">Profil</a>
       </li>
     </ul>

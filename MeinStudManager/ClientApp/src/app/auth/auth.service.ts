@@ -9,6 +9,7 @@ import { UserRegisterData } from "./user-register-data.model";
 export interface AuthResponse {
   isAuthSuccessful: boolean;
   errorMessage: string;
+  userId: string;
   token: string;
 }
 
@@ -47,7 +48,6 @@ export class AuthService {
 
 
   logout() {
-    // sends an unauthorized back
     this.http.get(this.baseUrl + 'api/User/logout').subscribe();
 
     this.loginStatus.next(null);
@@ -60,10 +60,9 @@ export class AuthService {
     if (!userData) {
       return;
     }
-    console.log(userData);
-
     const loadedLoginStatus = new LoginResponse(userData.isAuthSuccessful,
                                                 userData.errorMessage,
+                                                userData.userId,
                                                 userData.token);
 
     if (userData.token) {
@@ -75,11 +74,13 @@ export class AuthService {
   private handleAuth( resData: AuthResponse) {
     const isAuthSuccessful = resData.isAuthSuccessful;
     const errorMessage = resData.errorMessage;
+    const userId = resData.userId;
     const token = resData.token;
 
     const loginStatus = new LoginResponse(
       isAuthSuccessful,
       errorMessage,
+      userId,
       token);
       this.loginStatus.next(loginStatus);
       localStorage.setItem('userData', JSON.stringify(loginStatus));

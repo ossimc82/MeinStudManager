@@ -1,0 +1,24 @@
+.container {
+  margin-top: 30px;
+  padding: 5px;
+}
+
+.custom-border-up {
+  border-color: black;
+  border-style: solid solid none solid;
+  padding: 10px;
+}
+.custom-border-down {
+  border-color: black;
+  border-style: solid solid solid solid;
+  padding: 10px;
+}
+
+input.ng-invalid.ng-touched {
+  border: 1px solid red;
+}
+
+.error-message {
+  text-align: center;
+  font-size: medium;
+}

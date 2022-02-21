@@ -42,13 +42,11 @@ export class RegisterComponent implements OnInit {
         confirmPassword : this.registerForm.value.confirmPassword
        }
 
+
       this.isLoading = true;
       this.authService.signup(userData).subscribe(res => {
 
       window.confirm("registration successful - please log in");
-      console.log(res);
-
-
 
       this.router.navigate(['login']);
       this.isLoading = false;
@@ -62,7 +60,7 @@ export class RegisterComponent implements OnInit {
   }
 
 
-  onAbbort() {
+  onAbort() {
     this.router.navigate(['login'])
   }
 

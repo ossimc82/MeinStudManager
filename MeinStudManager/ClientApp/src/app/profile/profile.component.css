@@ -1,1 +1,33 @@
+ul {
+  display: flex;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: rgba(141, 205, 224, 0.774);
+}
 
+li {
+  flex: auto;
+  float: left;
+
+}
+
+li a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 10px 30px;
+  text-decoration: none;
+  border-style: none none solid solid;
+  color: black;
+  border-color: black;
+}
+
+li a:hover {
+  background-color:rgba(72, 94, 192, 0.774);
+}
+
+.active-link {
+  background-color:rgba(72, 94, 192, 0.774);
+}

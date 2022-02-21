@@ -5,6 +5,8 @@ import { AuthGuard } from "./auth/auth.guard";
 import { RegisterComponent } from "./auth/register/register.component";
 import { HomeComponent } from "./home/home.component";
 import { PlannerComponent } from "./planner/planner/planner.component";
+import { ChangeProfileComponent } from "./profile/change-profile/change-profile.component";
+import { PerformanceRecordComponent } from "./profile/performance-record/performance-record.component";
 import { ProfileComponent } from "./profile/profile.component";
 
 
@@ -13,7 +15,12 @@ import { ProfileComponent } from "./profile/profile.component";
 const appRoutes: Routes = [
   { path: '', redirectTo:'/home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent, canActivate: [AuthGuard] },
-  { path: 'profile', component: ProfileComponent,  canActivate: [AuthGuard] },
+  { path: 'profile', component: ProfileComponent,  canActivate: [AuthGuard], children:
+    [
+    {path: 'settings', component: ChangeProfileComponent},
+    {path: 'notenspiegel', component: PerformanceRecordComponent}
+    ]
+  },
   { path: 'login', component: AuthComponent  },
   { path: 'register', component: RegisterComponent },
   { path: 'planner', component: PlannerComponent },

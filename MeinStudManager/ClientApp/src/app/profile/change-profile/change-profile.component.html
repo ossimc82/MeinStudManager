@@ -1,0 +1,162 @@
+
+<div class="container">
+  <div class ="row justify-content-center">
+   <div class="col-8">
+
+    <form
+    *ngIf="user |async; else loading"
+     [formGroup]="changeProfileForm"
+     (ngSubmit)="onSubmit()">
+
+      <div class="row custom-border-up" >
+        <div class="col-6">
+          <label for="username" class="form-label"> Username</label>
+          <input
+            type="text"
+            id="username"
+            formControlName="userName"
+            class="form-control"
+            >
+        </div>
+        <div class="col-6 text-end align-self-center">
+          <button
+            *ngIf="editMode==='editFalse' || editMode !=='userName' "
+            class="btn btn-primary"
+            (click)="changeValue('userName')"
+            [disabled]="editMode !== 'editFalse'">
+            Username ändern
+          </button>
+          <button
+          *ngIf="editMode==='userName'"
+          class="btn btn-primary"
+          (click)="saveValue('userName')"
+          >
+          Username speichern
+        </button>
+        </div>
+      </div>
+
+      <div class="row custom-border-up" >
+        <div class="col-6">
+          <label for="firstname" class="form-label"> Vorname </label>
+          <input
+            type="text"
+            id="firstname"
+            formControlName="firstName"
+            class="form-control">
+        </div>
+        <div class="col-6 text-end align-self-center">
+          <button
+          *ngIf="editMode === 'editFalse' || editMode !=='firstName'"
+          class="btn btn-primary"
+          (click)="changeValue('firstName')"
+          [disabled]="editMode !== 'editFalse'">
+          Vorname ändern
+        </button>
+        <button
+          *ngIf="editMode === 'firstName'"
+          class="btn btn-primary"
+          (click)="saveValue('firstName')"
+          >
+          Vorname speichern
+       </button>
+        </div>
+      </div>
+
+      <div class="row custom-border-up" >
+        <div class="col-6">
+          <label for="lastname" class="form-label"> Nachname </label>
+          <input
+            type="text"
+            id="lastname"
+            formControlName="lastName"
+            class="form-control">
+        </div>
+        <div class="col-6 text-end align-self-center">
+          <button
+          *ngIf="editMode === 'editFalse' || editMode !=='lastName'"
+          class="btn btn-primary"
+          (click)="changeValue('lastName')"
+          [disabled]="editMode !== 'editFalse'">
+          Nachname ändern
+          </button>
+          <button
+          *ngIf="editMode==='lastName'"
+          class="btn btn-primary"
+          (click)="saveValue('lastName')"
+          >
+          Nachname speichern
+          </button>
+      </div>
+      </div>
+
+      <div class="row custom-border-up" >
+        <div class="col-6">
+          <label for="lastname" class="form-label"> Email </label>
+          <input
+            type="email"
+            id="email"
+            formControlName="email"
+            class="form-control">
+            <span
+            *ngIf="!changeProfileForm.get('email')?.valid && changeProfileForm.get('email')?.touched"
+            class="help-block">Bitte gib eine korrekte Email ein</span>
+        </div>
+        <div class="col-6 text-end align-self-center">
+          <button
+          *ngIf="editMode === 'editFalse' || editMode !=='email'"
+          class="btn btn-primary"
+          (click)="changeValue('email')"
+          [disabled]="editMode !== 'editFalse'">
+          Email ändern
+          </button>
+          <button
+          *ngIf="editMode==='email'"
+          class="btn btn-primary"
+          (click)="saveValue('email')"
+          >
+          Email speichern
+          </button>
+        </div>
+      </div>
+
+      <div class="row custom-border-down" >
+        <div class="col-6">
+          <label for="lastname" class="form-label"> Telefon </label>
+          <input
+            type="number"
+            id="phonenumber"
+            formControlName="phoneNumber"
+            class="form-control">
+        </div>
+        <div class="col-6 text-end align-self-center">
+          <button
+          *ngIf="editMode === 'editFalse' || editMode !=='phoneNumber'"
+          class="btn btn-primary"
+          (click)="changeValue('phoneNumber')"
+          [disabled]="editMode !== 'editFalse'">
+          Telefonnummer ändern
+          </button>
+          <button
+          *ngIf="editMode==='phoneNumber'"
+          class="btn btn-primary"
+          (click)="saveValue('phoneNumber')"
+          >
+          Telefonnummer speichern
+          </button>
+        </div>
+      </div>
+
+    </form>
+
+   </div>
+  </div>
+</div>
+
+<ng-template #loading>
+  Loading User...
+</ng-template>
+
+
+
+

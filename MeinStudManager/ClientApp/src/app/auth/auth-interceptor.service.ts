@@ -23,7 +23,6 @@ export class AuthInterceptorService implements HttpInterceptor {
         if(!loginStatus) {
           return next.handle(req);
         }
-        console.log(loginStatus.getToken());
         const modifiedReq = req.clone({
          // params: new HttpParams().set('auth', loginStatus.getToken())
          setHeaders: {

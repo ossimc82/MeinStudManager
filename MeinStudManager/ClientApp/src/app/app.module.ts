@@ -15,6 +15,8 @@ import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinne
 import { AuthInterceptorService } from './auth/auth-interceptor.service';
 import { PlannerComponent } from './planner/planner/planner.component';
 import { ScheduleModule } from '@syncfusion/ej2-angular-schedule';
+import { ChangeProfileComponent } from './profile/change-profile/change-profile.component';
+import { PerformanceRecordComponent } from './profile/performance-record/performance-record.component';
 
 
 
@@ -28,7 +30,9 @@ import { ScheduleModule } from '@syncfusion/ej2-angular-schedule';
     AuthComponent,
     RegisterComponent,
     LoadingSpinnerComponent,
-    PlannerComponent
+    PlannerComponent,
+    ChangeProfileComponent,
+    PerformanceRecordComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),

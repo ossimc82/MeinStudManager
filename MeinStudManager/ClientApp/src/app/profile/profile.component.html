@@ -1,2 +1,15 @@
-<p>profile works!</p>
-<div class="btn btn-primary" (click)="onLogout()">Logout</div>
+
+<ul >
+  <li routerLinkActive="active-link"
+
+   class="nav-item active" >
+    <a class="nav-link" routerLink="settings" >Accountdaten ändern</a>
+  </li>
+  <li routerLinkActive="active-link" class="nav-item active">
+    <a class="nav-link" routerLink="notenspiegel">Notenspiegel</a>
+  </li>
+  <li class="nav-item active">
+    <a class="nav-link" (click)="onLogout()">Logout</a>
+  </li>
+</ul>
+<router-outlet></router-outlet>
