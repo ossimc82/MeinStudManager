@@ -15,12 +15,9 @@ import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinne
 import { AuthInterceptorService } from './auth/auth-interceptor.service';
 import { PlannerComponent } from './planner/planner/planner.component';
 import { ScheduleModule } from '@syncfusion/ej2-angular-schedule';
-<<<<<<< HEAD
 import { ChangeProfileComponent } from './profile/change-profile/change-profile.component';
 import { PerformanceRecordComponent } from './profile/performance-record/performance-record.component';
-=======
 import { PlannerService } from './planner/planner/planner.service';
->>>>>>> 292de26d8cdd32ea3d1a5f9ddfad442addd4b5bd
 
 
 
