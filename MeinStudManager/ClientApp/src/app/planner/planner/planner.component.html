@@ -1,4 +1,6 @@
 <ejs-schedule #scheduleObj [eventSettings]='eventSettings'
   (eventRendered)="onEventRendered($event)"
   (popupOpen)='onPopupOpen($event)'
+  (actionBegin)="onActionBegin($event)"
+  (actionComplete)="onActionComplete($event)"
   ></ejs-schedule>
