@@ -61,7 +61,7 @@ export class ChangeProfileComponent implements OnInit  {
      this.userService.putUser(putUser).subscribe(
        res => {
          console.log(res);
-         //window.confirm("Änderung erfolgreich");
+         window.confirm("Änderung erfolgreich");
        },
        errorRes => {
          console.log(errorRes);
