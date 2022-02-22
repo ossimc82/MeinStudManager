@@ -1,1 +1,71 @@
-<p>performance-record works!</p>
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-8">
+
+      <div class="row">
+        <h3 class="text-center">Bachelorstudium Informatik 2013</h3>
+      </div>
+
+      <div class="row  custom-border-up">
+        <div class="col-6">1. Studienabschnit</div>
+        <div class="col-6 text-end "
+        [ngClass]="{'dropend': showSubjects}">
+          <button
+          class="btn btn-primary dropdown-toggle"
+          (click)="setShowSubjects()">
+        </button>
+        </div>
+      </div>
+
+      <div *ngIf="!showSubjects; else subjectTemplate"></div>
+
+
+
+      <div class="row  custom-border-up">
+        <div class="col-6">2. Studienabschnit</div>
+        <div class="col-6 text-end">
+          <button
+          class="btn btn-primary dropdown-toggle">
+        </button>
+        </div>
+      </div>
+
+
+      <div class="row  custom-border-up">
+        <div class="col-6">Wahlpflichtfächer</div>
+        <div class="col-6 text-end">
+          <button
+          class="btn btn-primary dropdown-toggle">
+
+        </button>
+        </div>
+      </div>
+
+      <div class="row  custom-border no-padding">
+        <div class="col-8 align-self-center">Durchschnitt</div>
+        <div class="col-2 custom-border-left">
+          2.4
+        </div>
+        <div class="col-2 custom-border-left">
+          35 CP
+        </div>
+      </div>
+
+
+
+        <ng-template #subjectTemplate>
+          <div *ngFor="let subject of subjects">
+            <div class="row  custom-border-up no-padding">
+              <div class="col-8 align-self-center">{{subject.name}}</div>
+              <div class="col-2 custom-border-left">
+                {{subject.grade}}
+              </div>
+              <div class="col-2 custom-border-left">
+                {{subject.cp }}   CP
+              </div>
+            </div>
+          </div>
+        </ng-template>
+
+  </div>
+</div>

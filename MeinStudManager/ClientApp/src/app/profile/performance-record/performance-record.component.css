@@ -1,0 +1,29 @@
+h3 {
+  padding: 20px;
+}
+
+.custom-border-up {
+  border-color: black;
+  border-style: solid solid none solid;
+  padding: 10px;
+}
+
+.custom-border-down {
+  border-color: black;
+  border-style: none solid solid solid;
+  padding: 10px;
+}
+.custom-border {
+  border-color: black;
+  border-style: solid solid solid solid;
+  padding: 10px;
+}
+
+.custom-border-left {
+  border-color: black;
+  border-style: none none none solid;
+  padding: 10px;
+}
+.no-padding {
+  padding: 0;
+}
