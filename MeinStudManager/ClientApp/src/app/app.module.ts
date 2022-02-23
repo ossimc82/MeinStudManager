@@ -18,6 +18,7 @@ import { ScheduleModule } from '@syncfusion/ej2-angular-schedule';
 import { ChangeProfileComponent } from './profile/change-profile/change-profile.component';
 import { PerformanceRecordComponent } from './profile/performance-record/performance-record.component';
 import { PlannerService } from './planner/planner/planner.service';
+import { StudyComponent } from './study/study.component';
 
 
 
@@ -33,7 +34,8 @@ import { PlannerService } from './planner/planner/planner.service';
     LoadingSpinnerComponent,
     PlannerComponent,
     ChangeProfileComponent,
-    PerformanceRecordComponent
+    PerformanceRecordComponent,
+    StudyComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),

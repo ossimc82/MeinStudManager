@@ -8,6 +8,7 @@ import { PlannerComponent } from "./planner/planner/planner.component";
 import { ChangeProfileComponent } from "./profile/change-profile/change-profile.component";
 import { PerformanceRecordComponent } from "./profile/performance-record/performance-record.component";
 import { ProfileComponent } from "./profile/profile.component";
+import { StudyComponent } from "./study/study.component";
 
 
 // add canActivate: [AuthGuard] to route if route should only be accessible after login
@@ -21,6 +22,7 @@ const appRoutes: Routes = [
     {path: 'notenspiegel', component: PerformanceRecordComponent}
     ]
   },
+  { path: 'lernen', component: StudyComponent  },
   { path: 'login', component: AuthComponent  },
   { path: 'register', component: RegisterComponent },
   { path: 'planner', component: PlannerComponent },
