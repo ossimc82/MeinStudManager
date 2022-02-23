@@ -35,7 +35,7 @@ export class AuthComponent implements OnInit {
         this.router.navigate(['']);
     }, errorRes => {
       this.error = true;
-      this.errorMessage = 'Passwort oder Email nicht richtig';
+      this.errorMessage = 'Passwort oder Email nicht richtig!';
       this.isLoading = false;
     });
 

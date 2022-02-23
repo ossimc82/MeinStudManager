@@ -2,18 +2,18 @@
 
   <div class="container">
     <div class="row justify-content-center ">
-      <div class="col-12 col-md-6">
+      <div class="col-12 col-md-7">
         <div class="row">
 
             <div class="col-7">
               <div class="row">
-                <h2>Mein</h2>
+                <h1>Mein</h1>
               </div>
               <div class="row ">
-                <h2 class="text-center">Studmanager</h2>
+                <h1 class="text-center">Studmanager</h1>
               </div>
-              <div class="row">
-                <h3>Die schlaue Art zu studieren</h3>
+              <div class="row" style="padding-top: 20px;">
+                <h2>Die schlaue Art zu studieren</h2>
               </div>
           </div>
 
@@ -50,8 +50,8 @@
                    </div>
               </form>
 
-              <div *ngIf="error" style="text-align: center;">
-                <div>{{errorMessage}} !</div>
+              <div *ngIf="error && !isLoading" style="text-align: center;">
+                <div>{{errorMessage}}!</div>
               </div>
 
             </div>
