@@ -5,17 +5,28 @@ namespace MeinStudManager.Models
 {
     public class ApplicationUserDto
     {
-        public string Id { get; set; }
-        public string UserName { get; set; }
-        [Editable(false)]
-        public string Email { get; set; }
+        public string Id { get; set; } = default!;
+        [Required(ErrorMessage = "A username is required.")]
+        [RegularExpression(@"[A-Za-z0-9]{3,16}",
+            ErrorMessage = "Username error! Your name has to be between 3-16 characters! Only alphanumerical characters are allowed.")]
+        public string UserName { get; set; } = default!;
+        [Required(ErrorMessage = "First name is required.")]
+        [MaxLength(256, ErrorMessage = "The first name cannot exceed 256 characters")]
+        [MinLength(1, ErrorMessage = "Your first name should have at least one character")]
+        public string FirstName { get; set; } = default!;
+
+        [Required(ErrorMessage = "Last name is required.")]
+        [MaxLength(256, ErrorMessage = "The last name cannot exceed 256 characters")]
+        [MinLength(1, ErrorMessage = "Your last name should have at least one character")]
+        public string LastName { get; set; } = default!;
+        [Required(ErrorMessage = "Email is required.")]
+        [EmailAddress(ErrorMessage = "Not a valid email address")]
+        public string Email { get; set; } = default!;
         [Editable(false)]
         public bool EmailConfirmed { get; set; }
-        public string PhoneNumber { get; set; }
+        public string PhoneNumber { get; set; } = string.Empty;
         [Editable(false)]
         public bool TwoFactorEnabled { get; set; }
-        public string? FirstName { get; set; }
-        public string? LastName { get; set; }
     }
 
     public class ApplicationUser : IdentityUser

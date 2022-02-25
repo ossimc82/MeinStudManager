@@ -27,7 +27,7 @@ namespace MeinStudManager.Authorization
         {
             return new Claim[]
             {
-                new (ClaimTypes.Name, user.UserName)
+                new (ClaimTypes.Name, user.Id)
             }.Concat(roles.Select(_ => new Claim(ClaimTypes.Role, _)));
         }
 

@@ -12,7 +12,7 @@ namespace MeinStudManager.Extensions
         {
             if (identity == null)
                 throw new ArgumentException("Cannot find user when there is no identity");
-            return userManager.FindByNameAsync(identity.Name);
+            return userManager.FindByIdAsync(identity.Name);
         }
     }
 }

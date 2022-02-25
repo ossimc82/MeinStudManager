@@ -35,7 +35,7 @@ namespace MeinStudManager.Controllers
             if (userId.ToString() != user.Id)
                 return BadRequest("Das bist nich du mein freund.");
 
-            data.CopyPropertiesTo(user, nameof(data.Id));
+            data.CopyPropertiesTo(user, nameof(data.Id), nameof(data.EmailConfirmed), nameof(data.TwoFactorEnabled));
 
             await UserManager.UpdateAsync(user);
 
