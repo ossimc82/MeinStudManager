@@ -1,10 +1,13 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { DayService, WeekService, WorkWeekService, MonthService, AgendaService, MonthAgendaService, TimelineViewsService, TimelineMonthService, EventSettingsModel, EventRenderedArgs, ScheduleComponent, PopupOpenEventArgs, ActionEventArgs, actionBegin } from '@syncfusion/ej2-angular-schedule';
+import { ColorPicker } from '@syncfusion/ej2-inputs';
+import { enableRipple } from '@syncfusion/ej2-base';
 import { timeTableData } from './timeTable-data.model';
 import { createElement } from '@syncfusion/ej2-base';
 import { DropDownList } from '@syncfusion/ej2-dropdowns';
 import { TextBox } from '@syncfusion/ej2-inputs'
 import { PlannerService } from './planner.service'
+import * as _ from "lodash"
 
 @Component({
   selector: 'app-planner',
@@ -49,6 +52,7 @@ export class PlannerComponent implements OnInit {
   ];
   categoryDropDown: DropDownList;
   lecturerTextBox: TextBox;
+  eventColorPicker: ColorPicker;
 
 
   ngOnInit(): void {
@@ -95,7 +99,7 @@ export class PlannerComponent implements OnInit {
 
           let container: HTMLElement = createElement('div', { className: 'e-subject-container' }); //Category
           let inputEle: HTMLInputElement = createElement('input', {
-              className: 'e-field', attrs: { name: 'Category' }
+              className: 'e-field', attrs: { name: 'category' }
           }) as HTMLInputElement;
           container.appendChild(inputEle);
           row.appendChild(container);
@@ -120,7 +124,7 @@ export class PlannerComponent implements OnInit {
           let titleElement: HTMLElement = createElement('label', { className: 'e-float-text e-label-top'})
           titleElement.innerText = "Dozent"
           let lecturerTextField: HTMLInputElement = createElement('input', {
-            className: 'e-field', attrs: { name: 'Lecturer' }
+            className: 'e-field', attrs: { name: 'dozent' }
           }) as HTMLInputElement;
           this.lecturerTextBox = new TextBox({
 
@@ -131,6 +135,24 @@ export class PlannerComponent implements OnInit {
           subContainer.appendChild(titleElement)
           container2.appendChild(subContainer)
           row.appendChild(container2)
+
+
+
+          let container3: HTMLElement = createElement('div', { className: 'e-color-container'}); //Color Picker
+
+          let timeEtc: HTMLElement = args.element.querySelector('.e-schedule-form').querySelector('.e-dialog-parent').querySelector('.e-all-day-time-zone-row');
+          timeEtc.appendChild(container3)
+
+          let inputContainer: HTMLInputElement = createElement('input', {
+             className: 'e-field', attrs: { name: 'color' }
+          }) as HTMLInputElement;
+          container3.appendChild(inputContainer)
+          this.eventColorPicker = new ColorPicker({
+          }, inputContainer);
+          console.log(this.eventColorPicker)
+
+          console.log("OBJ:", timeEtc)
+
         }
 
         if (args.element.querySelector('.custom-ej2-category-lecturer-row')){ //if a category-lecturer row exists, fill it with values
@@ -147,6 +169,12 @@ export class PlannerComponent implements OnInit {
           }
           else{
             this.categoryDropDown.value = (<{ [key: string]: Object }>(args.data)).category as string;
+          }
+
+          if(args.data.color){
+            this.eventColorPicker.value = (<{ [key: string]: Object }>(args.data)).color as string;
+          }else{
+            this.eventColorPicker.value = "";
           }
         }
     }
@@ -222,7 +250,10 @@ export class PlannerComponent implements OnInit {
   }
 
   createEvent(newEvent: timeTableData){
-    this.plannerService.addEvent(newEvent).subscribe((res: timeTableData ) => {
+    var cleanNewEvent = this.formatData(newEvent);
+    delete cleanNewEvent.id;
+    console.log("The DATA AFTER:", JSON.parse(JSON.stringify(cleanNewEvent)))
+    this.plannerService.addEvent(cleanNewEvent).subscribe((res: timeTableData ) => {
       this.getEvents(true)
     }, (error: any) => {
       //...
@@ -231,7 +262,8 @@ export class PlannerComponent implements OnInit {
   }
 
   changeEvent(changedEvent: timeTableData){
-    this.plannerService.updateEvent(changedEvent).subscribe((res: {}) => {
+    var cleanChangedEvent = this.formatData(changedEvent);
+    this.plannerService.updateEvent(cleanChangedEvent).subscribe((res: {}) => {
       this.getEvents(true)
     }, (error: any) => {
       //...
@@ -246,5 +278,35 @@ export class PlannerComponent implements OnInit {
       //...
       }
     );
+  }
+
+  formatData(data: timeTableData): timeTableData{
+    var data2 = _.cloneDeep(data)
+
+    var timeZoneDifference = (data2.startTime.getTimezoneOffset() / 60) * -1; //convert start time so it fits the exact user input (without timezone offsets)
+    data2.startTime.setTime(data2.startTime.getTime() + (timeZoneDifference * 60) * 60 * 1000);
+    data2.startTime.toISOString()
+    var timeZoneDifferenceEnd = (data2.endTime.getTimezoneOffset() / 60) * -1; //convert end time so it fits the exact user input (without timezone offsets)
+    data2.endTime.setTime(data2.endTime.getTime() + (timeZoneDifferenceEnd * 60) * 60 * 1000);
+    data2.endTime.toISOString()
+
+    //Fill empty data fields
+    if(!data2.category){
+      data2.category = "";
+    }
+    if(!data2.color){
+      data2.color = "";
+    }
+    if(!data2.location){
+      data2.location = "";
+    }
+    if(!data2.repeatFrequency){
+      data2.repeatFrequency = "";
+    }
+    if(!data2.repetition){
+      data2.repetition = "";
+    }
+
+    return data2;
   }
 }
