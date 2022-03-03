@@ -5,7 +5,7 @@
 
 
 
-/* For Schedule COmponent */
+/* For Schedule Component */
 @import '../node_modules/@syncfusion/ej2-base/styles/material.css';
 @import '../node_modules/@syncfusion/ej2-buttons/styles/material.css';
 @import '../node_modules/@syncfusion/ej2-calendars/styles/material.css';
@@ -16,6 +16,13 @@
 @import '../node_modules/@syncfusion/ej2-navigations/styles/material.css';
 @import '../node_modules/@syncfusion/ej2-angular-schedule/styles/material.css';
 @import '../src/app/planner/planner/custom-ej2-angular-schedule.css'; /* Necessary, because dynamic Elements of the Schedule will be generated in the BODY, not in the App-Component */
+
+/* Color Picker */
+@import "../node_modules/@syncfusion/ej2-base/styles/material.css";
+@import "../node_modules/@syncfusion/ej2-buttons/styles/material.css";
+@import "../node_modules/@syncfusion/ej2-popups/styles/material.css";
+@import "../node_modules/@syncfusion/ej2-splitbuttons/styles/material.css";
+@import "../node_modules/@syncfusion/ej2-inputs/styles/material.css";
 
 
 
