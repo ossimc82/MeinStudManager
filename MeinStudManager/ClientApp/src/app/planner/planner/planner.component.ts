@@ -1,13 +1,13 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { DayService, WeekService, WorkWeekService, MonthService, AgendaService, MonthAgendaService, TimelineViewsService, TimelineMonthService, EventSettingsModel, EventRenderedArgs, ScheduleComponent, PopupOpenEventArgs, ActionEventArgs, actionBegin } from '@syncfusion/ej2-angular-schedule';
 import { ColorPicker } from '@syncfusion/ej2-inputs';
-import { enableRipple } from '@syncfusion/ej2-base';
 import { timeTableData } from './timeTable-data.model';
 import { createElement } from '@syncfusion/ej2-base';
 import { DropDownList } from '@syncfusion/ej2-dropdowns';
 import { TextBox } from '@syncfusion/ej2-inputs'
 import { PlannerService } from './planner.service'
 import * as _ from "lodash"
+
 
 @Component({
   selector: 'app-planner',
@@ -50,10 +50,27 @@ export class PlannerComponent implements OnInit {
       color: '#00bb22'
     }
   ];
+  catDropdownSource: {[text: string]: Object;}[] = [
+    { text: 'Vorlesung', value: 'lecture' },
+    { text: 'Übung', value: 'exercise' },
+    { text: 'Klausur', value: 'exam' },
+    { text: 'Lern-Meeting', value: 'meeting' },
+    { text: 'Freizeitaktivität', value: 'leisure' },
+    { text: 'Urlaub', value: 'vacation' },
+    { text: 'Sonstiges', value: 'else' },
+  ]
   categoryDropDown: DropDownList;
   lecturerTextBox: TextBox;
   eventColorPicker: ColorPicker;
 
+  getCategoryTextFromValue(val: string){
+    for(let pair of this.catDropdownSource){
+      if(pair.value == val){
+        return pair.text;
+      }
+    }
+    return val;
+  }
 
   ngOnInit(): void {
     this.eventSettings = {
@@ -104,15 +121,7 @@ export class PlannerComponent implements OnInit {
           container.appendChild(inputEle);
           row.appendChild(container);
           this.categoryDropDown = new DropDownList({
-              dataSource: [
-                  { text: 'Vorlesung', value: 'lecture' },
-                  { text: 'Übung', value: 'exercise' },
-                  { text: 'Klausur', value: 'exam' },
-                  { text: 'Lern-Meeting', value: 'meeting' },
-                  { text: 'Freizeitaktivität', value: 'leisure' },
-                  { text: 'Urlaub', value: 'vacation' },
-                  { text: 'Sonstiges', value: 'else' },
-              ],
+              dataSource: this.catDropdownSource,
               fields: { text: 'text', value: 'value' },
 
               floatLabelType: 'Always', placeholder: 'Kategorie'
@@ -138,9 +147,13 @@ export class PlannerComponent implements OnInit {
 
 
 
-          let container3: HTMLElement = createElement('div', { className: 'e-color-container'}); //Color Picker
+          let container3: HTMLElement = createElement('div', { className: 'custom-ej2-color-picker-container'}); //Color Picker
+          let colorPickerText: HTMLElement = createElement('label', { className: 'e-label e-custom-colorpicker-text'});
+          colorPickerText.innerText = "Color"
+          container3.appendChild(colorPickerText)
 
           let timeEtc: HTMLElement = args.element.querySelector('.e-schedule-form').querySelector('.e-dialog-parent').querySelector('.e-all-day-time-zone-row');
+          timeEtc.className = "custom-ej2-allday-timezone-row"
           timeEtc.appendChild(container3)
 
           let inputContainer: HTMLInputElement = createElement('input', {
@@ -148,11 +161,14 @@ export class PlannerComponent implements OnInit {
           }) as HTMLInputElement;
           container3.appendChild(inputContainer)
           this.eventColorPicker = new ColorPicker({
+            modeSwitcher: true, mode: "Palette", enableOpacity: false
           }, inputContainer);
           console.log(this.eventColorPicker)
 
           console.log("OBJ:", timeEtc)
 
+          let timezone : HTMLElement = timeEtc.querySelector('.e-time-zone-container');
+          timezone.hidden = true;
         }
 
         if (args.element.querySelector('.custom-ej2-category-lecturer-row')){ //if a category-lecturer row exists, fill it with values
@@ -181,14 +197,30 @@ export class PlannerComponent implements OnInit {
   }
 
   onActionBegin(args: ActionEventArgs): void { //When Data is added / changed, or Date has been changed
+    console.log("Data:" , this.scheduleObj.eventSettings.dataSource)
     if(args.requestType === 'eventCreate') { //event create
       this.createEvent(<timeTableData>args.addedRecords[0])
     }
     else if (args.requestType === 'eventChange') { //event update
-      this.changeEvent(<timeTableData>args.changedRecords[0])
+      if(args.data["parent"]){ //repetition event changed (creating new individual event, add exception to old one)
+        args.changedRecords[0].recurrenceRule = ""; //so it doesnt repeat by changing one
+        this.createEvent(<timeTableData>args.changedRecords[0])
+        this.changeEvent(<timeTableData>args.data["parent"])
+      }
+      else{ //Real event changed
+        this.changeEvent(<timeTableData>args.changedRecords[0])
+      }
     }
     else if (args.requestType === 'eventRemove') { //event remove
-      this.deleteEvent(<timeTableData>args.deletedRecords[0])
+      console.log("DELETED: " , args)
+      if(args.changedRecords[0] && !args.data["occurrence"]){ //if Repetition was deleted (Just add to recurrence-exceptions)
+        console.log("REP DELETED")
+        this.changeEvent(<timeTableData>args.changedRecords[0])
+      }
+      else{ //if real event was deleted
+        console.log("REAL DELETED")
+        this.deleteEvent(<timeTableData>args.deletedRecords[0])
+      }
     }
     if(args.requestType === 'toolbarItemRendering'){ //initializing
       this.getEvents(true)
@@ -196,6 +228,7 @@ export class PlannerComponent implements OnInit {
   }
 
   onActionComplete(args: ActionEventArgs): void { //When changes are completed
+    console.log(args.requestType)
     if(args.requestType === 'dateNavigate'){ //actualizing Data according to the selected Date
       this.getEvents()
     }
@@ -241,7 +274,8 @@ export class PlannerComponent implements OnInit {
 //    console.log("SENDING FROM: ", calendarStartDate)
 //    console.log("SENDING TO: ", calendarEndDate)
       this.plannerService.getEvents(calendarStartDate, calendarEndDate).subscribe((res: timeTableData[]) => {
-        this.scheduleObj.eventSettings.dataSource = res;
+        this.scheduleObj.eventSettings.dataSource = this.formatReceivedData(res);
+        console.log("GOTEEM: " , this.scheduleObj.eventSettings.dataSource)
       }, (error: any) => {
         this.scheduleObj.eventSettings.dataSource = this.testData;
         }
@@ -250,9 +284,9 @@ export class PlannerComponent implements OnInit {
   }
 
   createEvent(newEvent: timeTableData){
-    var cleanNewEvent = this.formatData(newEvent);
+    console.log("CREATIN")
+    var cleanNewEvent = this.formatDataToSend(newEvent);
     delete cleanNewEvent.id;
-    console.log("The DATA AFTER:", JSON.parse(JSON.stringify(cleanNewEvent)))
     this.plannerService.addEvent(cleanNewEvent).subscribe((res: timeTableData ) => {
       this.getEvents(true)
     }, (error: any) => {
@@ -262,7 +296,8 @@ export class PlannerComponent implements OnInit {
   }
 
   changeEvent(changedEvent: timeTableData){
-    var cleanChangedEvent = this.formatData(changedEvent);
+    console.log("CHANGIN")
+    var cleanChangedEvent = this.formatDataToSend(changedEvent);
     this.plannerService.updateEvent(cleanChangedEvent).subscribe((res: {}) => {
       this.getEvents(true)
     }, (error: any) => {
@@ -280,7 +315,7 @@ export class PlannerComponent implements OnInit {
     );
   }
 
-  formatData(data: timeTableData): timeTableData{
+  formatDataToSend(data: timeTableData): timeTableData{
     var data2 = _.cloneDeep(data)
 
     var timeZoneDifference = (data2.startTime.getTimezoneOffset() / 60) * -1; //convert start time so it fits the exact user input (without timezone offsets)
@@ -300,13 +335,40 @@ export class PlannerComponent implements OnInit {
     if(!data2.location){
       data2.location = "";
     }
-    if(!data2.repeatFrequency){
+    if(!data.recurrenceRule){
       data2.repeatFrequency = "";
-    }
-    if(!data2.repetition){
       data2.repetition = "";
     }
+    else{
+      data2.repeatFrequency = data.recurrenceRule;
+      data2.repetition = "";
+    }
+    if(!data2.disabledDates){
+      if(!data2.RecurrenceException){
+        data2.disabledDates = ""
+      }
+      else{
+        data2.disabledDates = data2.RecurrenceException;
+      }
+    }
 
+    console.log("SENDING: ", data2)
+
+    return data2;
+  }
+
+  formatReceivedData(data: timeTableData[]): timeTableData[]{
+    var data2 = _.cloneDeep(data)
+
+    for(let singleData of data2){
+      if(singleData.repeatFrequency){
+        singleData.recurrenceRule = singleData.repeatFrequency;
+        console.log("ssl", singleData.disabledDates)
+        //if(singleData.disabledDates ||){
+        //  singleData.RecurrenceException = singleData.disabledDates;
+        //}
+      }
+    }
     return data2;
   }
 }
