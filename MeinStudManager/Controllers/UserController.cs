@@ -1,4 +1,5 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
+using System.Net.Mime;
 using System.Security.AccessControl;
 using System.Security.Claims;
 using MeinStudManager.Authorization;
@@ -37,14 +38,12 @@ namespace MeinStudManager.Controllers
         /// <response code="400">If one or more errors occurred.</response>
         /// <response code="500">If something very critical goes wrong in the server backend.</response>
         [HttpPost("register")]
-        [ProducesResponseType(StatusCodes.Status201Created, Type = null!)]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(void))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> RegisterUser([FromBody] UserRegisterDto? formData)
+        public async Task<IActionResult> RegisterUser([FromBody] UserRegisterDto formData)
         {
-            if (formData == null)
-                return BadRequest("Form data cannot be null or empty");
-
             var user = new ApplicationUser
             {
                 Email = formData.Email,
@@ -79,6 +78,7 @@ namespace MeinStudManager.Controllers
         /// <response code="401">If the user credentials are incorrect.</response>
         /// <response code="500">If something very critical goes wrong in the server backend.</response>
         [HttpPost("login")]
+        [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(LoginResultDto))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(LoginResultDto))]
@@ -114,8 +114,8 @@ namespace MeinStudManager.Controllers
         /// <response code="500">If something very critical goes wrong in the server backend.</response>
         [Authorize]
         [HttpGet("logout")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = null!)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = null!)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(void))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(void))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Logout()
         {

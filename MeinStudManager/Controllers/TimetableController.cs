@@ -1,4 +1,5 @@
-﻿using MeinStudManager.Data;
+﻿using System.Net.Mime;
+using MeinStudManager.Data;
 using MeinStudManager.Extensions;
 using MeinStudManager.Models;
 using Microsoft.AspNetCore.Http;
@@ -19,12 +20,14 @@ namespace MeinStudManager.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Lists all timetable entries from begin to end
         /// </summary>
         /// <returns></returns>
-        /// <response code="501">Not implemented.</response>
+        /// <param name="begin">The start time (Optional)</param>
+        /// <param name="end">The end time (Optional)</param>
+        /// <response code="200">If the request was successful</response>
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status501NotImplemented)]
+        [ProducesResponseType(typeof(IEnumerable<TimetableEntry>), 200)]
         public async Task<IActionResult> ListTimetableEntries([FromQuery]DateTime? begin = null, [FromQuery] DateTime? end = null)
         {
             begin ??= DateTime.MinValue;
@@ -37,33 +40,36 @@ namespace MeinStudManager.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Adds a new entry to the timetable.
         /// </summary>
         /// <returns></returns>
-        /// <response code="501">Not implemented.</response>
+        /// <response code="200">If the request was successful.</response>
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status501NotImplemented)]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         public async Task<IActionResult> AddNewTimetableEntry([FromBody] TimeTableInfoDto data, CancellationToken cancellationToken)
         {
             var user = await GetUser();
             var entry = new TimetableEntry
             {
+                Id = Guid.NewGuid(),
                 UserId = user.Id
             };
 
-            data.CopyPropertiesTo(entry);
+            data.CopyPropertiesTo(entry, nameof(entry.Id));
             var result = await db.AddAsync(entry, cancellationToken);
             await db.SaveChangesAsync(cancellationToken);
             return Ok();
         }
 
         /// <summary>
-        /// 
+        /// Deletes an entry from the timetable.
         /// </summary>
         /// <returns></returns>
-        /// <response code="501">Not implemented.</response>
+        /// <param name="id">The id of the entry to delete.</param>
+        /// <response code="200">If the request was successful.</response>
         [HttpDelete("{id:guid}")]
-        [ProducesResponseType(StatusCodes.Status501NotImplemented)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         public async Task<IActionResult> DeleteTimetableEntry(Guid id)
         {
             var user = await GetUser();
@@ -76,12 +82,14 @@ namespace MeinStudManager.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Updates a timetable entry
         /// </summary>
+        /// <param name="id">The id of the entry to update.</param>
         /// <returns></returns>
-        /// <response code="501">Not implemented.</response>
+        /// <response code="200">If the request was successful.</response>
         [HttpPut("{id:guid}")]
-        [ProducesResponseType(StatusCodes.Status501NotImplemented)]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         public async Task<IActionResult> UpdateTimetableEntry([FromRoute]Guid id, [FromBody]TimeTableInfoDto data, CancellationToken cancellationToken)
         {
             var user = await GetUser();

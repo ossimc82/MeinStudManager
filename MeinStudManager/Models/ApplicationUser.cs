@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
+using MeinStudManager.Models.Forum;
 using Microsoft.AspNetCore.Identity;
 
 namespace MeinStudManager.Models
@@ -40,5 +42,8 @@ namespace MeinStudManager.Models
 
         [PersonalData]
         public string? LastName { get; set; }
+
+        [JsonIgnore]
+        public List<ForumReply> ForumReplies { get; set; }
     }
 }

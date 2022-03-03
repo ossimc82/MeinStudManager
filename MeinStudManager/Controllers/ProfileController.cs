@@ -1,4 +1,5 @@
-﻿using MeinStudManager.Data;
+﻿using System.Net.Mime;
+using MeinStudManager.Data;
 using MeinStudManager.Extensions;
 using MeinStudManager.Models;
 using Microsoft.AspNetCore.Identity;
@@ -15,7 +16,14 @@ namespace MeinStudManager.Controllers
             this.db = db;
         }
 
+        /// <summary>
+        /// Displays information about a user
+        /// </summary>
+        /// <param name="userId">The id of the user</param>
+        /// <returns></returns>
+        /// <response code="200">If the request was successful.</response>
         [HttpGet("{userId:guid}")]
+        [ProducesResponseType(typeof(ApplicationUserDto), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetUserInfo(Guid userId)
         {
             var user = await UserManager.FindByIdAsync(userId.ToString());
@@ -28,8 +36,16 @@ namespace MeinStudManager.Controllers
             return Ok(userInfo);
         }
 
+        /// <summary>
+        /// Updates the users information
+        /// </summary>
+        /// <param name="userId">The id of the user to update</param>
+        /// <returns></returns>
+        /// <response code="200">If the request was successful.</response>
         [HttpPut("{userId:guid}")]
-        public async Task<IActionResult> UpdateUserInfo([FromRoute]Guid userId, ApplicationUserDto data)
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(typeof(ApplicationUserDto), StatusCodes.Status200OK)]
+        public async Task<IActionResult> UpdateUserInfo([FromRoute] Guid userId, [FromBody] ApplicationUserDto data)
         {
             var user = await GetUser();
             if (userId.ToString() != user.Id)
@@ -37,9 +53,8 @@ namespace MeinStudManager.Controllers
 
             data.CopyPropertiesTo(user, nameof(data.Id), nameof(data.EmailConfirmed), nameof(data.TwoFactorEnabled));
 
-            await UserManager.UpdateAsync(user);
-
-            return Ok(user);
+            var result = await UserManager.UpdateAsync(user);
+            return !result.Succeeded ? Problem(result.Errors.Select(_ => _.Description).ToArray()) : Ok(data);
         }
     }
 }
