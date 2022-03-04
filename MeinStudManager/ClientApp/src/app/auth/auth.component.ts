@@ -23,6 +23,7 @@ export class AuthComponent implements OnInit {
       'ident' : new FormControl(null,Validators.required),
       'password' : new FormControl(null,[Validators.required])
     });
+    this.authService.setWasLoggedOut(true);
   }
 
   onSubmit() {

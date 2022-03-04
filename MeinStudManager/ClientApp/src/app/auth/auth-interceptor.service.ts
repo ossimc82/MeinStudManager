@@ -1,7 +1,7 @@
-import { HttpEvent, HttpHandler, HttpInterceptor, HttpParams, HttpRequest } from "@angular/common/http";
+import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpParams, HttpRequest } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
-import { exhaustMap, take } from "rxjs/operators";
+import { exhaustMap, take, tap } from "rxjs/operators";
 import { AuthService } from "./auth.service";
 
 // Interceptor that will later attach the token to outgoing requests
@@ -29,7 +29,18 @@ export class AuthInterceptorService implements HttpInterceptor {
           Authorization: `Bearer ${loginStatus.getToken()}`
         }
         });
-        return next.handle(modifiedReq);
+        return next.handle(modifiedReq).pipe(tap(()=> {},
+          (err: any) => {
+            if (err instanceof HttpErrorResponse) {
+              if (err.status !== 401) {
+                return;
+              }
+             // this.authService.setWasLoggedOut(true);
+              this.authService.autoLogout();
+
+            }
+          }
+        ));
       })
     );
 
