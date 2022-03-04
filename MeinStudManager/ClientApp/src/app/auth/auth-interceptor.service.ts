@@ -4,8 +4,7 @@ import { Observable } from "rxjs";
 import { exhaustMap, take, tap } from "rxjs/operators";
 import { AuthService } from "./auth.service";
 
-// Interceptor that will later attach the token to outgoing requests
-// has to be modified later maybe
+// Interceptor that will later attach the token to outgoing requests and check for 401 responses
 
 // has to be provided in providers {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor} in app.module
 
@@ -35,7 +34,6 @@ export class AuthInterceptorService implements HttpInterceptor {
               if (err.status !== 401) {
                 return;
               }
-             // this.authService.setWasLoggedOut(true);
               this.authService.autoLogout();
 
             }

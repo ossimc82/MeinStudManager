@@ -19,7 +19,7 @@ export interface AuthResponse {
 export class AuthService {
 
   loginStatus = new BehaviorSubject<LoginResponse>(null);
-  wasLoggedOut : boolean = true; // maybe invert all Logic here
+  wasLoggedOut : boolean = false; // maybe invert all Logic here
   token: string='';
 
 
@@ -60,7 +60,7 @@ export class AuthService {
     this.loginStatus.next(null);
     this.router.navigate(['login']);
     localStorage.clear();
-    this.printLogoutMessage();
+    this.wasLoggedOut = true;
   }
 
   autoLogin() {
@@ -93,27 +93,11 @@ export class AuthService {
       this.loginStatus.next(loginStatus);
       localStorage.setItem('userData', JSON.stringify(loginStatus));
   }
-  // works only ones because the service always exists
-//   private logOutMessage = (() =>{
-//     var executed = false;
-//     return ()=> {
-//         if (!executed) {
-//             executed = true;
-//             window.alert('Your session expired -  please log in again');
-//         }
-//     };
-// })();
+
    setWasLoggedOut(bool : boolean) {
     this.wasLoggedOut = bool;
    }
-
-   private printLogoutMessage() {
-    if (this.wasLoggedOut) {
-      window.alert('Your session has expired -  please log in again');
-      // maybe set waLoggedOut here and in auth
-    }
-    this.wasLoggedOut = false;
+  getWasLoggedOut() : boolean {
+    return this.wasLoggedOut;
    }
-
-
 }

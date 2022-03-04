@@ -1,6 +1,7 @@
 import { Component, DoCheck,  OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
+import { AuthService } from 'src/app/auth/auth.service';
 import { User } from 'src/app/shared/user/user.model';
 import { UserService } from 'src/app/shared/user/user.service';
 
@@ -23,7 +24,6 @@ export class ChangeProfileComponent implements OnInit  {
     ) { }
 
   ngOnInit(): void {
-
     this.userId = this.userService.getUserId();
 
     this.changeProfileForm = new FormGroup({

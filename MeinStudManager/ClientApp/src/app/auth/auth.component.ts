@@ -14,6 +14,8 @@ export class AuthComponent implements OnInit {
   isLoading = false;
   error = false;
   errorMessage = '';
+  loggedOut :boolean;
+  loggedOutMessage = '';
 
 
   constructor(private router: Router, private authService: AuthService) {}
@@ -23,7 +25,10 @@ export class AuthComponent implements OnInit {
       'ident' : new FormControl(null,Validators.required),
       'password' : new FormControl(null,[Validators.required])
     });
-    this.authService.setWasLoggedOut(true);
+    if (this.authService.getWasLoggedOut) {
+      this.loggedOut = this.authService.getWasLoggedOut();
+      this.loggedOutMessage = 'your session has expired -please log in again'
+    }
   }
 
   onSubmit() {

@@ -54,6 +54,10 @@
                 <div>{{errorMessage}}!</div>
               </div>
 
+              <div *ngIf="loggedOut && !isLoading" style="text-align: center;">
+                <div>{{loggedOutMessage}}!</div>
+              </div>
+
             </div>
 
         </div>
