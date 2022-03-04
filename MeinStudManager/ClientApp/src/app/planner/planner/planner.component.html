@@ -3,4 +3,16 @@
   (popupOpen)='onPopupOpen($event)'
   (actionBegin)="onActionBegin($event)"
   (actionComplete)="onActionComplete($event)"
-  ></ejs-schedule>
+  >
+
+  <ng-template #eventSettingsTemplate let-data>
+    <div class='template-wrap' [style.background]="data.color">
+      <div class="e-subject" style="max-height: 68px;">{{data.subject}}</div>
+      <div class="e-time">{{data.startTime | date: 'shortTime'}} - {{data.endTime | date: 'shortTime'}}</div>
+      <div *ngIf="data.location">{{data.location}}</div>
+      <div *ngIf="data.dozent">{{data.dozent}}</div>
+      <div *ngIf="data.category">{{getCategoryTextFromValue(data.category)}}</div>
+    </div>
+  </ng-template>
+
+</ejs-schedule>

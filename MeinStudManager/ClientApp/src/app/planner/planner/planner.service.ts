@@ -36,18 +36,14 @@ export class PlannerService {
     )
   }
   updateEvent(data: timeTableData): Observable<any>{
-    const params = new HttpParams();
-    params.set('id', data.id);
-    return this.httpClient.put<timeTableData>(this.baseUrl + this.endpoint, data, {params: params})
+    return this.httpClient.put<timeTableData>(this.baseUrl + this.endpoint + "/" + data.id, data)
     .pipe(
       retry(1),
       catchError(this.processError)
     )
   }
   deleteEvent(id: string): Observable<any>{
-    const params = new HttpParams();
-    params.set('id', id);
-    return this.httpClient.delete(this.baseUrl + this.endpoint, {params: params})
+    return this.httpClient.delete(this.baseUrl + this.endpoint + "/" + id)
     .pipe(
       retry(1),
       catchError(this.processError)
@@ -62,6 +58,7 @@ export class PlannerService {
      message = `Error Code: ${err.status}\nMessage: ${err.message}`;
     }
     console.log(message);
+    console.log(err)
     return throwError(message);
  }
 }

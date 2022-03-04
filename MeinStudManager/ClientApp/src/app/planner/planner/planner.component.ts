@@ -1,10 +1,13 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { DayService, WeekService, WorkWeekService, MonthService, AgendaService, MonthAgendaService, TimelineViewsService, TimelineMonthService, EventSettingsModel, EventRenderedArgs, ScheduleComponent, PopupOpenEventArgs, ActionEventArgs, actionBegin } from '@syncfusion/ej2-angular-schedule';
+import { ColorPicker } from '@syncfusion/ej2-inputs';
 import { timeTableData } from './timeTable-data.model';
 import { createElement } from '@syncfusion/ej2-base';
 import { DropDownList } from '@syncfusion/ej2-dropdowns';
 import { TextBox } from '@syncfusion/ej2-inputs'
 import { PlannerService } from './planner.service'
+import * as _ from "lodash"
+
 
 @Component({
   selector: 'app-planner',
@@ -47,9 +50,27 @@ export class PlannerComponent implements OnInit {
       color: '#00bb22'
     }
   ];
+  catDropdownSource: {[text: string]: Object;}[] = [
+    { text: 'Vorlesung', value: 'lecture' },
+    { text: 'Übung', value: 'exercise' },
+    { text: 'Klausur', value: 'exam' },
+    { text: 'Lern-Meeting', value: 'meeting' },
+    { text: 'Freizeitaktivität', value: 'leisure' },
+    { text: 'Urlaub', value: 'vacation' },
+    { text: 'Sonstiges', value: 'else' },
+  ]
   categoryDropDown: DropDownList;
   lecturerTextBox: TextBox;
+  eventColorPicker: ColorPicker;
 
+  getCategoryTextFromValue(val: string){
+    for(let pair of this.catDropdownSource){
+      if(pair.value == val){
+        return pair.text;
+      }
+    }
+    return val;
+  }
 
   ngOnInit(): void {
     this.eventSettings = {
@@ -95,20 +116,12 @@ export class PlannerComponent implements OnInit {
 
           let container: HTMLElement = createElement('div', { className: 'e-subject-container' }); //Category
           let inputEle: HTMLInputElement = createElement('input', {
-              className: 'e-field', attrs: { name: 'Category' }
+              className: 'e-field', attrs: { name: 'category' }
           }) as HTMLInputElement;
           container.appendChild(inputEle);
           row.appendChild(container);
           this.categoryDropDown = new DropDownList({
-              dataSource: [
-                  { text: 'Vorlesung', value: 'lecture' },
-                  { text: 'Übung', value: 'exercise' },
-                  { text: 'Klausur', value: 'exam' },
-                  { text: 'Lern-Meeting', value: 'meeting' },
-                  { text: 'Freizeitaktivität', value: 'leisure' },
-                  { text: 'Urlaub', value: 'vacation' },
-                  { text: 'Sonstiges', value: 'else' },
-              ],
+              dataSource: this.catDropdownSource,
               fields: { text: 'text', value: 'value' },
 
               floatLabelType: 'Always', placeholder: 'Kategorie'
@@ -120,7 +133,7 @@ export class PlannerComponent implements OnInit {
           let titleElement: HTMLElement = createElement('label', { className: 'e-float-text e-label-top'})
           titleElement.innerText = "Dozent"
           let lecturerTextField: HTMLInputElement = createElement('input', {
-            className: 'e-field', attrs: { name: 'Lecturer' }
+            className: 'e-field', attrs: { name: 'dozent' }
           }) as HTMLInputElement;
           this.lecturerTextBox = new TextBox({
 
@@ -131,6 +144,31 @@ export class PlannerComponent implements OnInit {
           subContainer.appendChild(titleElement)
           container2.appendChild(subContainer)
           row.appendChild(container2)
+
+
+
+          let container3: HTMLElement = createElement('div', { className: 'custom-ej2-color-picker-container'}); //Color Picker
+          let colorPickerText: HTMLElement = createElement('label', { className: 'e-label e-custom-colorpicker-text'});
+          colorPickerText.innerText = "Color"
+          container3.appendChild(colorPickerText)
+
+          let timeEtc: HTMLElement = args.element.querySelector('.e-schedule-form').querySelector('.e-dialog-parent').querySelector('.e-all-day-time-zone-row');
+          timeEtc.className = "custom-ej2-allday-timezone-row"
+          timeEtc.appendChild(container3)
+
+          let inputContainer: HTMLInputElement = createElement('input', {
+             className: 'e-field', attrs: { name: 'color' }
+          }) as HTMLInputElement;
+          container3.appendChild(inputContainer)
+          this.eventColorPicker = new ColorPicker({
+            modeSwitcher: true, mode: "Palette", enableOpacity: false
+          }, inputContainer);
+          console.log(this.eventColorPicker)
+
+          console.log("OBJ:", timeEtc)
+
+          let timezone : HTMLElement = timeEtc.querySelector('.e-time-zone-container');
+          timezone.hidden = true;
         }
 
         if (args.element.querySelector('.custom-ej2-category-lecturer-row')){ //if a category-lecturer row exists, fill it with values
@@ -148,19 +186,41 @@ export class PlannerComponent implements OnInit {
           else{
             this.categoryDropDown.value = (<{ [key: string]: Object }>(args.data)).category as string;
           }
+
+          if(args.data.color){
+            this.eventColorPicker.value = (<{ [key: string]: Object }>(args.data)).color as string;
+          }else{
+            this.eventColorPicker.value = "";
+          }
         }
     }
   }
 
   onActionBegin(args: ActionEventArgs): void { //When Data is added / changed, or Date has been changed
+    console.log("Data:" , this.scheduleObj.eventSettings.dataSource)
     if(args.requestType === 'eventCreate') { //event create
       this.createEvent(<timeTableData>args.addedRecords[0])
     }
     else if (args.requestType === 'eventChange') { //event update
-      this.changeEvent(<timeTableData>args.changedRecords[0])
+      if(args.data["parent"]){ //repetition event changed (creating new individual event, add exception to old one)
+        args.changedRecords[0].recurrenceRule = ""; //so it doesnt repeat by changing one
+        this.createEvent(<timeTableData>args.changedRecords[0])
+        this.changeEvent(<timeTableData>args.data["parent"])
+      }
+      else{ //Real event changed
+        this.changeEvent(<timeTableData>args.changedRecords[0])
+      }
     }
     else if (args.requestType === 'eventRemove') { //event remove
-      this.deleteEvent(<timeTableData>args.deletedRecords[0])
+      console.log("DELETED: " , args)
+      if(args.changedRecords[0] && !args.data["occurrence"]){ //if Repetition was deleted (Just add to recurrence-exceptions)
+        console.log("REP DELETED")
+        this.changeEvent(<timeTableData>args.changedRecords[0])
+      }
+      else{ //if real event was deleted
+        console.log("REAL DELETED")
+        this.deleteEvent(<timeTableData>args.deletedRecords[0])
+      }
     }
     if(args.requestType === 'toolbarItemRendering'){ //initializing
       this.getEvents(true)
@@ -168,6 +228,7 @@ export class PlannerComponent implements OnInit {
   }
 
   onActionComplete(args: ActionEventArgs): void { //When changes are completed
+    console.log(args.requestType)
     if(args.requestType === 'dateNavigate'){ //actualizing Data according to the selected Date
       this.getEvents()
     }
@@ -213,7 +274,8 @@ export class PlannerComponent implements OnInit {
 //    console.log("SENDING FROM: ", calendarStartDate)
 //    console.log("SENDING TO: ", calendarEndDate)
       this.plannerService.getEvents(calendarStartDate, calendarEndDate).subscribe((res: timeTableData[]) => {
-        this.scheduleObj.eventSettings.dataSource = res;
+        this.scheduleObj.eventSettings.dataSource = this.formatReceivedData(res);
+        console.log("GOTEEM: " , this.scheduleObj.eventSettings.dataSource)
       }, (error: any) => {
         this.scheduleObj.eventSettings.dataSource = this.testData;
         }
@@ -222,7 +284,10 @@ export class PlannerComponent implements OnInit {
   }
 
   createEvent(newEvent: timeTableData){
-    this.plannerService.addEvent(newEvent).subscribe((res: timeTableData ) => {
+    console.log("CREATIN")
+    var cleanNewEvent = this.formatDataToSend(newEvent);
+    delete cleanNewEvent.id;
+    this.plannerService.addEvent(cleanNewEvent).subscribe((res: timeTableData ) => {
       this.getEvents(true)
     }, (error: any) => {
       //...
@@ -231,7 +296,9 @@ export class PlannerComponent implements OnInit {
   }
 
   changeEvent(changedEvent: timeTableData){
-    this.plannerService.updateEvent(changedEvent).subscribe((res: {}) => {
+    console.log("CHANGIN")
+    var cleanChangedEvent = this.formatDataToSend(changedEvent);
+    this.plannerService.updateEvent(cleanChangedEvent).subscribe((res: {}) => {
       this.getEvents(true)
     }, (error: any) => {
       //...
@@ -246,5 +313,62 @@ export class PlannerComponent implements OnInit {
       //...
       }
     );
+  }
+
+  formatDataToSend(data: timeTableData): timeTableData{
+    var data2 = _.cloneDeep(data)
+
+    var timeZoneDifference = (data2.startTime.getTimezoneOffset() / 60) * -1; //convert start time so it fits the exact user input (without timezone offsets)
+    data2.startTime.setTime(data2.startTime.getTime() + (timeZoneDifference * 60) * 60 * 1000);
+    data2.startTime.toISOString()
+    var timeZoneDifferenceEnd = (data2.endTime.getTimezoneOffset() / 60) * -1; //convert end time so it fits the exact user input (without timezone offsets)
+    data2.endTime.setTime(data2.endTime.getTime() + (timeZoneDifferenceEnd * 60) * 60 * 1000);
+    data2.endTime.toISOString()
+
+    //Fill empty data fields
+    if(!data2.category){
+      data2.category = "";
+    }
+    if(!data2.color){
+      data2.color = "";
+    }
+    if(!data2.location){
+      data2.location = "";
+    }
+    if(!data.recurrenceRule){
+      data2.repeatFrequency = "";
+      data2.repetition = "";
+    }
+    else{
+      data2.repeatFrequency = data.recurrenceRule;
+      data2.repetition = "";
+    }
+    if(!data2.disabledDates){
+      if(!data2.RecurrenceException){
+        data2.disabledDates = ""
+      }
+      else{
+        data2.disabledDates = data2.RecurrenceException;
+      }
+    }
+
+    console.log("SENDING: ", data2)
+
+    return data2;
+  }
+
+  formatReceivedData(data: timeTableData[]): timeTableData[]{
+    var data2 = _.cloneDeep(data)
+
+    for(let singleData of data2){
+      if(singleData.repeatFrequency){
+        singleData.recurrenceRule = singleData.repeatFrequency;
+        console.log("ssl", singleData.disabledDates)
+        //if(singleData.disabledDates ||){
+        //  singleData.RecurrenceException = singleData.disabledDates;
+        //}
+      }
+    }
+    return data2;
   }
 }

@@ -1,3 +1,4 @@
+using System.Net.Mime;
 using System.Reflection;
 using System.Text;
 using MeinStudManager.Authorization;
@@ -5,6 +6,7 @@ using MeinStudManager.Data;
 using MeinStudManager.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -38,7 +40,19 @@ namespace MeinStudManager
                 .AddRoleManager<RoleManager<IdentityRole>>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            services.AddControllersWithViews();
+            services.AddControllersWithViews(options =>
+            {
+                options.Filters.Add(new ProducesAttribute(MediaTypeNames.Application.Json));
+                //BUG BUG
+                //Adding consumes to the filters breaks all GET requests (404)
+                //because GET requests do not have a body (Maybe gets fixed with .NET7)
+                //options.Filters.Add(new ConsumesAttribute(MediaTypeNames.Application.Json));
+
+                //General response types
+                options.Filters.Add(
+                    new ProducesResponseTypeAttribute(typeof(ProblemDetails), StatusCodes.Status400BadRequest));
+                options.Filters.Add(new ProducesResponseTypeAttribute(StatusCodes.Status500InternalServerError));
+            });
 
             services.AddSwaggerGen(options =>
             {
@@ -105,6 +119,7 @@ namespace MeinStudManager
 
             services.AddSingleton(jwtHandler);
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddTransient<ForumManager>();
             //Add other services here
         }
 
