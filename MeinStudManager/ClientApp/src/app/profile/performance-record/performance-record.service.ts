@@ -1,12 +1,26 @@
-import { Injectable } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import { Inject, Injectable } from "@angular/core";
+import { pipe, Subject } from "rxjs";
+import { map, tap } from "rxjs/operators";
 
-// maybe rename later to avoid confusion with rxjs subject
-export class Subject {
+export interface resSubject {
+  name : string;
+  grade: number;
+  credits: number;
+}
+export  interface resSubjects {
+  name : string;
+  subjects : resSubject[];
+}
+export interface resGradesData {
+  studySections: resSubjects[];
+}
+
+export class UniSubject {
   constructor(
-    public type : string,
     public name: string,
-    public grade: string,
-    public cp: string
+    public grade: number,
+    public cp: number
   ) {}
 }
 
@@ -14,49 +28,20 @@ export class Subject {
   providedIn:'root'
 })
 export class PerformanceRecordService {
-  // hard coded test-data until API is available
+  constructor(
+    private http : HttpClient,
+    @Inject('BASE_URL') private baseUrl: string) {}
 
-    subjects: Subject[] = [
-      new Subject(
-        "1",
-        "Technische-Informatik",
-        "2.3",
-        "5"
-      ),
-      new Subject(
-        "1",
-        "BWL",
-        "5.0",
-        "5"
-      ),
-      new Subject(
-        "2",
-        "Mathe 1",
-        "2.7",
-        "5"
-      ),
-      new Subject(
-        "2",
-        "Mathe 2",
-        "2.7",
-        "5"
-      ),
-      new Subject(
-        "3",
-        "Rechnernetze",
-        "2.7",
-        "5"
-      ),
-      new Subject(
-        "3",
-        "Vertiefung Datenbanken",
-        "2.7",
-        "5"
-      ),
-      ]
 
-      getSubjects() {
-        return this.subjects;
+      getGrades()  {
+       return this.http.get<resGradesData>(
+         this.baseUrl + 'api/Grade/list').pipe(
+           map(
+             res =>  {
+               return res.studySections;
+             }
+           )
+         );
       }
-
 }
+
