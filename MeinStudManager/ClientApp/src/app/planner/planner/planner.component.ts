@@ -163,9 +163,6 @@ export class PlannerComponent implements OnInit {
           this.eventColorPicker = new ColorPicker({
             modeSwitcher: true, mode: "Palette", enableOpacity: false
           }, inputContainer);
-          console.log(this.eventColorPicker)
-
-          console.log("OBJ:", timeEtc)
 
           let timezone : HTMLElement = timeEtc.querySelector('.e-time-zone-container');
           timezone.hidden = true;
@@ -197,40 +194,41 @@ export class PlannerComponent implements OnInit {
   }
 
   onActionBegin(args: ActionEventArgs): void { //When Data is added / changed, or Date has been changed
-    console.log("Data:" , this.scheduleObj.eventSettings.dataSource)
-    if(args.requestType === 'eventCreate') { //event create
-      this.createEvent(<timeTableData>args.addedRecords[0])
-    }
-    else if (args.requestType === 'eventChange') { //event update
-      if(args.data["parent"]){ //repetition event changed (creating new individual event, add exception to old one)
-        args.changedRecords[0].recurrenceRule = ""; //so it doesnt repeat by changing one
-        this.createEvent(<timeTableData>args.changedRecords[0])
-        this.changeEvent(<timeTableData>args.data["parent"])
-      }
-      else{ //Real event changed
-        this.changeEvent(<timeTableData>args.changedRecords[0])
-      }
-    }
-    else if (args.requestType === 'eventRemove') { //event remove
-      console.log("DELETED: " , args)
-      if(args.changedRecords[0] && !args.data["occurrence"]){ //if Repetition was deleted (Just add to recurrence-exceptions)
-        console.log("REP DELETED")
-        this.changeEvent(<timeTableData>args.changedRecords[0])
-      }
-      else{ //if real event was deleted
-        console.log("REAL DELETED")
-        this.deleteEvent(<timeTableData>args.deletedRecords[0])
-      }
-    }
     if(args.requestType === 'toolbarItemRendering'){ //initializing
       this.getEvents(true)
     }
   }
 
   onActionComplete(args: ActionEventArgs): void { //When changes are completed
-    console.log(args.requestType)
     if(args.requestType === 'dateNavigate'){ //actualizing Data according to the selected Date
       this.getEvents()
+    }
+    if(args.requestType === 'eventCreated') { //event create
+      this.createEvent(<timeTableData>args.addedRecords[0])
+    }
+    else if (args.requestType === 'eventChanged') { //event update
+      if(args.changedRecords[0].RecurrenceException){ //repetition event changed (creating new individual event, add exception to old one)
+
+        var newEvent = _.cloneDeep(args.data[0]);
+        delete newEvent.disabledDates;
+        newEvent.recurrenceRule = "";
+        delete newEvent.RecurrenceException;
+        this.createEvent(<timeTableData>newEvent)
+
+        this.changeEvent(<timeTableData>args.changedRecords[0]) //addException
+      }
+      else{ //Real event changed
+        this.changeEvent(<timeTableData>args.changedRecords[0])
+      }
+    }
+
+    else if (args.requestType === 'eventRemoved') { //event remove
+      if(args.changedRecords[0]){ //if Repetition was deleted (Just add to recurrence-exceptions)
+        this.changeEvent(<timeTableData>args.changedRecords[0])
+      }
+      else{ //if real event was deleted
+        this.deleteEvent(<timeTableData>args.deletedRecords[0])
+      }
     }
   }
 
@@ -255,6 +253,7 @@ export class PlannerComponent implements OnInit {
       end.setMonth(3, 10)
       if(now.getMonth() >= 9 ){
         end.setFullYear(now.getFullYear() + 1)
+        begin.setFullYear(now.getFullYear())
       }
       else{
         begin.setFullYear(now.getFullYear() - 1)
@@ -271,11 +270,11 @@ export class PlannerComponent implements OnInit {
     compareStartDate.setHours(0,0,0,0);
     if((this.previousStartDate.getTime() != compareStartDate.getTime()) || forceRequest){ //check if semester isnt loaded already (Or force request)
       this.previousStartDate = compareStartDate;
-//    console.log("SENDING FROM: ", calendarStartDate)
-//    console.log("SENDING TO: ", calendarEndDate)
+ //   console.log("SENDING FROM: ", calendarStartDate)
+ //   console.log("SENDING TO: ", calendarEndDate)
       this.plannerService.getEvents(calendarStartDate, calendarEndDate).subscribe((res: timeTableData[]) => {
         this.scheduleObj.eventSettings.dataSource = this.formatReceivedData(res);
-        console.log("GOTEEM: " , this.scheduleObj.eventSettings.dataSource)
+        //console.log("Fetched Date: " , this.scheduleObj.eventSettings.dataSource)
       }, (error: any) => {
         this.scheduleObj.eventSettings.dataSource = this.testData;
         }
@@ -284,7 +283,6 @@ export class PlannerComponent implements OnInit {
   }
 
   createEvent(newEvent: timeTableData){
-    console.log("CREATIN")
     var cleanNewEvent = this.formatDataToSend(newEvent);
     delete cleanNewEvent.id;
     this.plannerService.addEvent(cleanNewEvent).subscribe((res: timeTableData ) => {
@@ -296,7 +294,6 @@ export class PlannerComponent implements OnInit {
   }
 
   changeEvent(changedEvent: timeTableData){
-    console.log("CHANGIN")
     var cleanChangedEvent = this.formatDataToSend(changedEvent);
     this.plannerService.updateEvent(cleanChangedEvent).subscribe((res: {}) => {
       this.getEvents(true)
@@ -315,7 +312,7 @@ export class PlannerComponent implements OnInit {
     );
   }
 
-  formatDataToSend(data: timeTableData): timeTableData{
+  formatDataToSend(data): timeTableData{
     var data2 = _.cloneDeep(data)
 
     var timeZoneDifference = (data2.startTime.getTimezoneOffset() / 60) * -1; //convert start time so it fits the exact user input (without timezone offsets)
@@ -343,30 +340,67 @@ export class PlannerComponent implements OnInit {
       data2.repeatFrequency = data.recurrenceRule;
       data2.repetition = "";
     }
-    if(!data2.disabledDates){
-      if(!data2.RecurrenceException){
-        data2.disabledDates = ""
-      }
-      else{
-        data2.disabledDates = data2.RecurrenceException;
+
+    if(!data2.RecurrenceException){
+      data2.disabledDates = []
+    }
+    else{
+      data2.disabledDates = data.RecurrenceException.split(",");
+      for(let dateStringIndex in <string[]>data2.disabledDates){  // Date format conversion
+        let dateString : string = data2.disabledDates[dateStringIndex]
+        if(dateString.substring(0,1) == ","){
+          dateString = dateString.substring(1, dateString.length)
+        }
+        let date = new Date();
+        date.setFullYear(
+          parseInt(dateString.substring(0, 4)),
+          parseInt(dateString.substring(4, 6)) - 1,
+          parseInt(dateString.substring(6, 8)))
+        date.setHours(
+          parseInt(dateString.substring(9, 11)),
+        )
+        date.setMinutes(
+          parseInt(dateString.substring(11, 13))
+        )
+        date.setSeconds(
+          parseInt(dateString.substring(13, 15))
+        )
+
+        var timeZDifference = (date.getTimezoneOffset() / 60) * -1;
+        date.setTime(date.getTime() + (timeZDifference * 60) * 60 * 1000);
+
+
+        data2.disabledDates[dateStringIndex] = date.toISOString()
       }
     }
-
-    console.log("SENDING: ", data2)
-
     return data2;
   }
 
   formatReceivedData(data: timeTableData[]): timeTableData[]{
     var data2 = _.cloneDeep(data)
 
-    for(let singleData of data2){
+    for(let singleData of data2){ //set Dates into proper Format
       if(singleData.repeatFrequency){
         singleData.recurrenceRule = singleData.repeatFrequency;
-        console.log("ssl", singleData.disabledDates)
-        //if(singleData.disabledDates ||){
-        //  singleData.RecurrenceException = singleData.disabledDates;
-        //}
+      }
+
+      if(singleData.disabledDates.length > 0){
+        var str : string = "";
+        for(var i = 0; i < singleData.disabledDates.length; i++){
+          var disabledDate = singleData.disabledDates[i]
+          let addDate =
+            disabledDate.substring(0,4) +
+            disabledDate.substring(5,7) +
+            disabledDate.substring(8, 13) +
+            disabledDate.substring(14,16) +
+            disabledDate.substring(17,19)
+          str = str + addDate;
+          if(i != singleData.disabledDates.length - 1){
+            str = str + ","
+          }
+        }
+
+        singleData.RecurrenceException = str;
       }
     }
     return data2;

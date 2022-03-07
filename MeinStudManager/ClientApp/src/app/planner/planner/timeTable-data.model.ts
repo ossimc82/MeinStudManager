@@ -13,7 +13,7 @@ export interface timeTableData {
   interval?: number;
   recurrenceRule?: string; //should replace other 3?
 
-  disabledDates?: string;
+  disabledDates?: string[];
 
   color?: string;
   location?: string;
