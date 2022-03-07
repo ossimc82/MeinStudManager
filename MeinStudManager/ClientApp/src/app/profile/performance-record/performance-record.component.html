@@ -36,21 +36,24 @@
 
       <div class="row  custom-border-up">
         <div class="col-6 fw-bold">Wahlpflichtfächer</div>
-        <div class="col-6 text-end">
+        <div class="col-6 text-end"
+        [ngClass]="{'dropend': showSubjectsSectionOptional}">
           <button
-          class="btn btn-primary dropdown-toggle">
-
+          class="btn btn-primary dropdown-toggle"
+          (click)="setShowSubjectsSectionOptional()">
         </button>
         </div>
       </div>
 
+      <div *ngIf="!showSubjectsSectionOptional; else subjectTemplateOptional"></div>
+
       <div class="row  custom-border no-padding">
         <div class="col-8 align-self-center fw-bold">Durchschnitt</div>
         <div class="col-2 custom-border-left">
-          2.4
+          {{averageGrade }}
         </div>
         <div class="col-2 custom-border-left">
-          35 CP
+          {{cpTotal }}   CP
         </div>
       </div>
 
@@ -72,6 +75,20 @@
 
         <ng-template #subjectTemplateTwo>
           <div *ngFor="let subject of subjectsSectionTwo">
+            <div class="row  custom-border-up no-padding">
+              <div class="col-8 align-self-center">{{subject.name}}</div>
+              <div class="col-2 custom-border-left">
+                {{subject.grade}}
+              </div>
+              <div class="col-2 custom-border-left">
+                {{subject.cp }}   CP
+              </div>
+            </div>
+          </div>
+        </ng-template>
+
+        <ng-template #subjectTemplateOptional>
+          <div *ngFor="let subject of subjectsSectionOptional">
             <div class="row  custom-border-up no-padding">
               <div class="col-8 align-self-center">{{subject.name}}</div>
               <div class="col-2 custom-border-left">

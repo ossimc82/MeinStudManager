@@ -97,7 +97,7 @@ export class AuthService {
    setWasLoggedOut(bool : boolean) {
     this.wasLoggedOut = bool;
    }
-  getWasLoggedOut() : boolean {
-    return this.wasLoggedOut;
-   }
+    getWasLoggedOut() : boolean {
+      return this.wasLoggedOut;
+    }
 }
