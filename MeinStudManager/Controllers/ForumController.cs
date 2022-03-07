@@ -108,5 +108,50 @@ namespace MeinStudManager.Controllers
             var result = await forumManager.DeletePost(topicId, postId, await GetUser());
             return result == null ? Ok("Success").AsJson() : Problem(result);
         }
+
+        /// <summary>
+        /// Upvotes a reply.
+        /// </summary>
+        /// <param name="topicId">The id of the topic.</param>
+        /// <param name="postId">The id of the reply to vote up.</param>
+        /// <returns></returns>
+        /// <response code="200">If the upvote was successful.</response>
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [HttpPost("topic/{topicId}/upVote/{postId}")]
+        public async Task<IActionResult> VoteUp([FromRoute] Guid topicId, [FromRoute] Guid postId)
+        {
+            var result = await forumManager.Vote(topicId, postId, await GetUser(), ForumVoteType.Up);
+            return result == null ? Ok("Success").AsJson() : Problem(result);
+        }
+
+        /// <summary>
+        /// Downvotes a reply.
+        /// </summary>
+        /// <param name="topicId">The id of the topic.</param>
+        /// <param name="postId">The id of the reply to vote down.</param>
+        /// <returns></returns>
+        /// <response code="200">If the downvote was successful.</response>
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [HttpPost("topic/{topicId}/downVote/{postId}")]
+        public async Task<IActionResult> VoteDown([FromRoute] Guid topicId, [FromRoute] Guid postId)
+        {
+            var result = await forumManager.Vote(topicId, postId, await GetUser(), ForumVoteType.Down);
+            return result == null ? Ok("Success").AsJson() : Problem(result);
+        }
+
+        /// <summary>
+        /// Removes a vote from a reply.
+        /// </summary>
+        /// <param name="topicId">The id of the topic.</param>
+        /// <param name="postId">The id of the reply of the vote.</param>
+        /// <returns></returns>
+        /// <response code="200">If the vote was delete successful.</response>
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [HttpPost("topic/{topicId}/removeVote/{postId}")]
+        public async Task<IActionResult> RemoveVote([FromRoute] Guid topicId, [FromRoute] Guid postId)
+        {
+            var result = await forumManager.RemoveVote(topicId, postId, await GetUser());
+            return result == null ? Ok("Success").AsJson() : Problem(result);
+        }
     }
 }

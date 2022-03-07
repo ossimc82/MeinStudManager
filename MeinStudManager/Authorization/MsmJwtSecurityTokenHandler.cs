@@ -40,8 +40,8 @@ namespace MeinStudManager.Authorization
             var userManager = context.RequestServices.GetService<UserManager<ApplicationUser>>()!;
             var token = tokenHandler.ReadToken(securityToken) as JwtSecurityToken;
             var user = userManager.FindByIdAsync(token!.Claims.First(_ => _.Type == ClaimTypes.Name)?.Value).Result;
-            
-            if (securityTokenCanRead && user != null && user.SecurityToken != securityToken)
+
+            if (user == null || (securityTokenCanRead && user.SecurityToken != securityToken))
                 return false;
             
             return securityTokenCanRead;

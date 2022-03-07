@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using MeinStudManager.Data;
 using MeinStudManager.Models.Forum;
 using Microsoft.AspNetCore.Identity;
 
@@ -45,5 +46,7 @@ namespace MeinStudManager.Models
 
         [JsonIgnore]
         public List<ForumReply> ForumReplies { get; set; }
+        [JsonIgnore]
+        public List<ForumVote> ForumVotes { get; set; }
     }
 }

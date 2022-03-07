@@ -4,6 +4,7 @@ using MeinStudManager.Models;
 using MeinStudManager.Models.Forum;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace MeinStudManager.Data
 {
@@ -19,7 +20,9 @@ namespace MeinStudManager.Data
         public PagingResult<ForumReply> GetReplies(Guid topic, int count, int page)
         {
             return PagingResult<ForumReply>.CreatePagingResult(
-                db.ForumReplies.Where(_ => _.TopicId == topic).OrderBy(_ => _.CreationDate).Include(_ => _.Author), count, page);
+                db.ForumReplies.Where(_ => _.TopicId == topic).OrderBy(_ => _.CreationDate)
+                    .Include(_ => _.Author)
+                    .Include(_ => _.Votes), count, page);
         }
 
         public async Task<IActionResult> NewTopic(ApplicationUser user, string title, string content)
@@ -122,6 +125,68 @@ namespace MeinStudManager.Data
 
             await db.SaveChangesAsync();
             return null;
+        }
+
+        public async Task<string?> Vote(Guid topicId, Guid postId, ApplicationUser user, ForumVoteType type)
+        {
+            var (vote, errorMessage) = await FindVote(topicId, postId, user);
+
+            if (errorMessage != null)
+                return errorMessage;
+
+            EntityEntry<ForumVote>? voteEn = null;
+
+            if (vote == null)
+            {
+                vote = new ForumVote
+                {
+                    TopicId = topicId,
+                    ReplyId = postId,
+                    UserId = user.Id
+                };
+                voteEn = db.ForumVotes.Add(vote);
+            };
+
+            voteEn ??= db.Attach(vote);
+            voteEn.Entity.Type = type;
+
+            await db.SaveChangesAsync();
+
+            return null;
+        }
+
+        public async Task<string?> RemoveVote(Guid topicId, Guid postId, ApplicationUser user)
+        {
+            var (vote, errorMessage) = await FindVote(topicId, postId, user);
+
+            if (errorMessage != null)
+                return errorMessage;
+
+            if (vote == null)
+                return "This vote does not exist.";
+
+            db.ForumVotes.Remove(vote);
+
+            await db.SaveChangesAsync();
+            return null;
+        }
+
+        private async Task<(ForumVote?, string?)> FindVote(Guid topicId, Guid postId, ApplicationUser user)
+        {
+            var topic = await db.ForumTopics.FindAsync(topicId);
+
+            if (topic == null)
+                return (null, $"Topic with id {topicId} not found.");
+            
+            var post = await db.ForumReplies.FindAsync(postId);
+
+            if (post == null)
+                return (null, $"Reply with id {postId} not found.");
+
+            if (post.TopicId != topic.Id)
+                return (null, $"The reply with id {postId} does not belong to the topic with id {topicId}.");
+
+            return (await db.ForumVotes.FindAsync(topicId, postId, user.Id), null);
         }
     }
 }

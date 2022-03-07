@@ -16,6 +16,7 @@ namespace MeinStudManager.Data
         public DbSet<TimetableEntry> Timetables { get; set; } = default!;
         public DbSet<ForumReply> ForumReplies { get; set; } = default!;
         public DbSet<ForumTopic> ForumTopics { get; set; } = default!;
+        public DbSet<ForumVote> ForumVotes { get; set; } = default!;
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -39,6 +40,36 @@ namespace MeinStudManager.Data
                 .HasOne(r => r.Topic)
                 .WithMany(t => t.Replies)
                 .HasForeignKey(r => r.TopicId);
+
+            builder.Entity<ForumVote>()
+                .HasKey(v => new { v.TopicId, v.ReplyId, v.UserId });
+
+            builder.Entity<ForumVote>()
+                .HasIndex(v => v.TopicId)
+                .IsUnique(false);
+
+            builder.Entity<ForumVote>()
+                .HasIndex(v => v.ReplyId)
+                .IsUnique(false);
+
+            builder.Entity<ForumVote>()
+                .HasIndex(v => v.UserId)
+                .IsUnique(false);
+
+            builder.Entity<ForumVote>()
+                .HasOne(v => v.User)
+                .WithMany(u => u.ForumVotes)
+                .HasForeignKey(v => v.UserId);
+
+            builder.Entity<ForumVote>()
+                .HasOne(v => v.Reply)
+                .WithMany(r => r.Votes)
+                .HasForeignKey(v => v.ReplyId);
+
+            builder.Entity<ForumVote>()
+                .HasOne(v => v.Topic)
+                .WithOne()
+                .HasForeignKey<ForumVote>(v => v.TopicId);
 
             builder.Entity<ForumReply>()
                 .HasOne(r => r.Author)

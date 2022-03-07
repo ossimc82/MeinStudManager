@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using MeinStudManager.Data;
 
 namespace MeinStudManager.Models.Forum
 {
@@ -13,11 +14,16 @@ namespace MeinStudManager.Models.Forum
         public string Title { get; set; }
         public string Content { get; set; }
 
+        public int NumUpVotes => Votes.Count(_ => _.Type == ForumVoteType.Up);
+        public int NumDownVotes => Votes.Count(_ => _.Type == ForumVoteType.Down);
+
         public string AuthorName => Author.UserName;
 
         [JsonIgnore]
         public ApplicationUser Author { get; set; }
         [JsonIgnore]
         public ForumTopic Topic { get; set; }
+        [JsonIgnore]
+        public List<ForumVote> Votes { get; set; }
     }
 }
