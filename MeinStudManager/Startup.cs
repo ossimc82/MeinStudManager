@@ -24,6 +24,8 @@ namespace MeinStudManager
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddRazorPages();
+
             services.AddDbContext<ApplicationDbContext>(options =>
             {
                 var keyFile = File.ReadAllText("dbAccess.key").Split('\t');
@@ -155,6 +157,8 @@ namespace MeinStudManager
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapRazorPages();
+
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");

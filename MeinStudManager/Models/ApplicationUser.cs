@@ -48,5 +48,7 @@ namespace MeinStudManager.Models
         public List<ForumReply> ForumReplies { get; set; }
         [JsonIgnore]
         public List<ForumVote> ForumVotes { get; set; }
+        [JsonIgnore]
+        public List<GradeEntry> Grades { get; set; }
     }
 }
