@@ -168,7 +168,7 @@ namespace MeinStudManager.Controllers
         /// </summary>
         /// <returns></returns>
         /// <response code="200">If the grade was successfully deleted.</response>
-        [HttpDelete]
+        [HttpPost("delete")]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         public async Task<IActionResult> DeleteGrade([FromBody] GradesPostDto data)
