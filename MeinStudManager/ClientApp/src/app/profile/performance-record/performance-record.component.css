@@ -2,6 +2,10 @@ h3 {
   padding: 20px;
 }
 
+a:hover {
+  cursor:pointer;
+ }
+
 .custom-border-up {
   border-color: black;
   border-style: solid solid none solid;
@@ -26,4 +30,12 @@ h3 {
 }
 .no-padding {
   padding: 0;
+}
+input.ng-invalid.ng-touched {
+  border: 1px solid red;
+}
+
+.error-message {
+  text-align: center;
+  font-size: medium;
 }

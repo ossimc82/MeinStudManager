@@ -54,6 +54,7 @@ export class AuthService {
     this.loginStatus.next(null);
     this.router.navigate(['login']);
     localStorage.clear();
+    this.wasLoggedOut = false;
   }
   // logout method without a request, in case the token is already expired on the server
   autoLogout() {
