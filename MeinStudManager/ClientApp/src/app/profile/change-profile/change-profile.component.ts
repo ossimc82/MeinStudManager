@@ -60,11 +60,11 @@ export class ChangeProfileComponent implements OnInit  {
     console.log(putUser);
      this.userService.putUser(putUser).subscribe(
        res => {
-         console.log(res);
+
          window.confirm("Änderung erfolgreich");
        },
        errorRes => {
-         console.log(errorRes);
+
        }
      );
   }
