@@ -1,0 +1,17 @@
+﻿@page
+@model ErrorModel
+@{
+    ViewData["Title"] = "Generate Documentation";
+}
+
+<script src="https://unpkg.com/rapipdf/dist/rapipdf-min.js"></script>
+<rapi-pdf
+    style="width: 700px; height: 40px; font-size: 18px;"
+    spec-url="/swagger/v1/swagger.json"
+    button-bg="#b44646"
+    hide-input="true"
+    pdf-footer-text="© 2022 Fabian Fischer"
+    pdf-schema-style="table"
+    include-api-list="true"
+    include-example="true">
+</rapi-pdf>

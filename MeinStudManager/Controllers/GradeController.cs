@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography.X509Certificates;
+﻿using System.Net.Mime;
+using System.Security.Cryptography.X509Certificates;
 using MeinStudManager.Data;
 using MeinStudManager.Models;
 using Microsoft.AspNetCore.Identity;
@@ -116,6 +117,7 @@ namespace MeinStudManager.Controllers
         /// <returns></returns>
         /// <response code="201">If the request was successful.</response>
         [HttpPost]
+        [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(string), StatusCodes.Status201Created)]
         public async Task<IActionResult> AddNewGrade([FromBody] GradesPostDto data)
         {
@@ -145,6 +147,7 @@ namespace MeinStudManager.Controllers
         /// <returns></returns>
         /// <response code="200">If the grade was edited successful.</response>
         [HttpPut]
+        [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         public async Task<IActionResult> EditGrade([FromBody] GradesPostDto data)
         {
@@ -166,6 +169,7 @@ namespace MeinStudManager.Controllers
         /// <returns></returns>
         /// <response code="200">If the grade was successfully deleted.</response>
         [HttpDelete]
+        [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         public async Task<IActionResult> DeleteGrade([FromBody] GradesPostDto data)
         {
