@@ -1,0 +1,11 @@
+.editor-main-container{
+  display: grid;
+  grid-row: 30px 150px 30px;
+  column-width: 100%;
+  width: 500px;
+}
+
+.editor-buttom-row{
+  display: flexbox;
+  text-align: end;
+}

@@ -20,6 +20,12 @@ import { PerformanceRecordComponent } from './profile/performance-record/perform
 import { PlannerService } from './planner/planner/planner.service';
 import { StudyComponent } from './study/study.component';
 import { ForumComponent } from './forum/forum.component';
+import { ForumTopicCreator } from './forum/editor/post-creator.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { ForumService } from './forum/forum.service';
 
 
 
@@ -37,7 +43,8 @@ import { ForumComponent } from './forum/forum.component';
     ChangeProfileComponent,
     PerformanceRecordComponent,
     StudyComponent,
-    ForumComponent
+    ForumComponent,
+    ForumTopicCreator
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -45,10 +52,15 @@ import { ForumComponent } from './forum/forum.component';
     FormsModule,
     ReactiveFormsModule,
     AppRoutingModule,
-    ScheduleModule
+    ScheduleModule,
+    BrowserAnimationsModule,
+    MatDialogModule,
+    MatButtonModule
   ],
   providers: [{provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true},
-    PlannerService],
+    PlannerService,
+    ForumService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

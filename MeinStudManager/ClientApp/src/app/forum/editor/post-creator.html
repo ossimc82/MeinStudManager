@@ -1,0 +1,15 @@
+<h1>Neuen Beitrag Hizufügen</h1>
+
+<div class="editor-main-container">
+  Title:
+  <input matInput [(ngModel)]="postData.title">
+
+  Content:
+  <textarea [(ngModel)]="postData.content"></textarea>
+
+  <div class="editor-buttom-row">
+    <button (click)="postDiscarded()">Discard</button>
+    <button  [mat-dialog-close]="postData" >Submit</button>
+  </div>
+
+</div>

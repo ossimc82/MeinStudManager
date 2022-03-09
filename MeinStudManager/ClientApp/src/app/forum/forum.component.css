@@ -1,0 +1,26 @@
+.topic-overview-main-structure {
+  display: grid;
+  grid-row: 50px 2000px 50px; /*header (neuer Beitrag), posts, page selection*/
+  border-top: 1px;
+  border-bottom: 1px;
+}
+
+.post-container {
+  display: grid;
+  border-style: solid;
+  border-width: 2px;
+}
+.post-container:hover {
+  background-color: yellow;
+  cursor:pointer;
+}
+
+.post{
+  height: 80px;
+  max-height: 80px;
+}
+
+.page-container{
+  display: block;
+  text-align: center;
+}
