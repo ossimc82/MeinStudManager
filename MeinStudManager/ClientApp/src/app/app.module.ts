@@ -19,6 +19,7 @@ import { ChangeProfileComponent } from './profile/change-profile/change-profile.
 import { PerformanceRecordComponent } from './profile/performance-record/performance-record.component';
 import { PlannerService } from './planner/planner/planner.service';
 import { StudyComponent } from './study/study.component';
+import { ForumComponent } from './forum/forum.component';
 
 
 
@@ -35,7 +36,8 @@ import { StudyComponent } from './study/study.component';
     PlannerComponent,
     ChangeProfileComponent,
     PerformanceRecordComponent,
-    StudyComponent
+    StudyComponent,
+    ForumComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
