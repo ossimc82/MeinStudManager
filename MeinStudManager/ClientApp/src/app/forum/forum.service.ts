@@ -47,6 +47,14 @@ export class ForumService {
     )
   }
 
+  editReply(reply: ForumCreatorInput, topicId: string, postId: string){
+    return this.httpClient.put(this.baseUrl + this.endpoint + "/topic/" + topicId + "/edit/" + postId, reply)
+    .pipe(
+      retry(1),
+      catchError(this.processError)
+    )
+  }
+
 
 
   processError(err) {

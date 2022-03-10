@@ -5,11 +5,12 @@ import { first } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { MatButton } from '@angular/material/button';
 
-import { ForumTopic, ForumReply, ForumTopicResultsContainer, ForumReplyResultsContainer, ForumCreatorInput } from '../forum-post.model';
-import { ForumTopicCreator } from '../editor/post-creator.component';
+import { ForumTopic, ForumReply, ForumTopicResultsContainer, ForumReplyResultsContainer, ForumCreatorInput, EditorPurposeData, EditorPurposeTypes } from '../forum-post.model';
+import { ForumPostCreator } from '../editor/post-creator.component';
 import { ForumService } from '../forum.service';
 
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
+import { UserService } from 'src/app/shared/user/user.service';
 
 @Component({
   selector: 'app-forum',
@@ -17,11 +18,10 @@ import { Router, ActivatedRoute, ParamMap } from '@angular/router';
   styleUrls: ['./forum-topic.component.css']
 })
 export class ForumTopicComponent implements OnInit {
-
+  userId = "";
   topicId = "";
   pageNum = 1;
-
-  constructor(public dialog: MatDialog, public forumService: ForumService, private router: Router, private route: ActivatedRoute) {}
+  constructor(public dialog: MatDialog, public forumService: ForumService, public userService: UserService, private router: Router, private route: ActivatedRoute) {}
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
       var topic = params.get('topicId');
@@ -34,48 +34,25 @@ export class ForumTopicComponent implements OnInit {
         this.pageNum = pageNum;
       }
     })
-
+    this.userId = this.userService.getUserId()
   }
-  currentTopics: ForumTopic[] = [];
   currentReplies: ForumReply[] = [];
-  testData: ForumTopic[] = [
-    {
-      title: "Test",
-      lastReply: ""
-  //    content: "askdf;sdfjpsdjfosdfjdpfjsduohidfgyuhrojgkjfh0dfj84u3eh4tepfjre8o0tuwe9fjroehgrfidgnoifioerf80eu0v9234ur09uv300nu80nu83vnum08fvgnum34fgvnmhfvg4rhnm8fghm84vfghrfg8h4vgfhu834fvg8ruv8v4g8vgh8uvg4h8vgh484vgh8vg4hm8hh808h43h834h83v50gervg0um9-ervgikerfvgkerfvgkoervgkfm gk gerjmkoe rgjmk gerjm gerjmie rgmi erg gm erpj gjmerm gjermjg mje gmgmig. Danke fuers lesen!"
-    },
-    {
-      title: "Tomatensosse",
-      lastReply: ""
-     // content: "Hey Leute, mir ist letztens der Topf vom Herd geflogen und jetzt hab ich keine Tomatensosse mehr. Kann mir vielleicht jemand welche leihen?"
-    },
-    {
-      title: "WTF",
-      lastReply: ""
-  //    content: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-    }
-  ]
-
-  createNewTopic(){
-    const dialogRef = this.dialog.open(ForumTopicCreator); //Open Pop-Up
-
-    dialogRef.afterClosed().subscribe(result => { //If Submitted new Topic
-      if(!result){
-        console.log("failure")
-      }
-      else{ //Create Topic + First Post
-       // this.submitNewTopic(<TopicCreatorInput>result);
-      }
-    });
-  }
 
   showTopic(topic: ForumTopic){
     this.router.navigate(['about']);
     this.getAllTopicReplies(topic.id)
   }
 
-  createAnswer(){
-    const dialogRef = this.dialog.open(ForumTopicCreator); //Open Pop-Up
+  createAnswer(answerType: string, referrencedReply?: ForumReply){
+    var purpose: EditorPurposeData = { type: EditorPurposeTypes.newReply};
+    if(answerType == "direct"){
+      purpose.type = EditorPurposeTypes.directReply
+      purpose.replyRef = referrencedReply;
+    }
+    const dialogRef = this.dialog.open(ForumPostCreator, {
+      autoFocus: (answerType != "direct")
+    }); //Open Pop-Up
+    dialogRef.componentInstance.purposeData = purpose;
 
     dialogRef.afterClosed().subscribe(result => { //If Submitted new Topic
       if(!result){
@@ -83,6 +60,24 @@ export class ForumTopicComponent implements OnInit {
       }
       else{ //Create Topic + First Post
         this.submitNewReply(<ForumCreatorInput>result);
+      }
+    });
+  }
+
+  editPost(post: ForumReply){
+    var purpose: EditorPurposeData = {
+      type: EditorPurposeTypes.replyEdit,
+      replyRef: post
+    };
+    const dialogRef = this.dialog.open(ForumPostCreator); //Open Pop-Up
+    dialogRef.componentInstance.purposeData = purpose;
+
+    dialogRef.afterClosed().subscribe(result => { //If Submitted new Topic
+      if(!result){
+        console.log("failure")
+      }
+      else{ //Create Topic + First Post
+        this.submitEdit(<ForumCreatorInput>result, post);
       }
     });
   }
@@ -106,6 +101,15 @@ export class ForumTopicComponent implements OnInit {
 
   submitNewReply(reply: ForumCreatorInput){
     this.forumService.setNewReply(this.topicId, reply).subscribe((res: {}) => {
+      this.getAllTopicReplies(this.topicId)
+    }, (error: any) => {
+      //...
+      }
+    );
+  }
+
+  submitEdit(reply: ForumCreatorInput, post: ForumReply){
+    this.forumService.editReply(reply, this.topicId, post.id).subscribe((res: {}) => {
       this.getAllTopicReplies(this.topicId)
     }, (error: any) => {
       //...

@@ -20,7 +20,7 @@ import { PerformanceRecordComponent } from './profile/performance-record/perform
 import { PlannerService } from './planner/planner/planner.service';
 import { StudyComponent } from './study/study.component';
 import { ForumComponent } from './forum/forum.component';
-import { ForumTopicCreator } from './forum/editor/post-creator.component';
+import { ForumPostCreator } from './forum/editor/post-creator.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { MatDialogModule } from '@angular/material/dialog';
@@ -45,7 +45,7 @@ import { ForumTopicComponent } from './forum/topic/forum-topic.component';
     PerformanceRecordComponent,
     StudyComponent,
     ForumComponent,
-    ForumTopicCreator,
+    ForumPostCreator,
     ForumTopicComponent
   ],
   imports: [

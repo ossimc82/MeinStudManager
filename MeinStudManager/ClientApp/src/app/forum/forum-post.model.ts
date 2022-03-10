@@ -37,3 +37,17 @@ export interface ForumCreatorInput {
   title: string;
   content: string;
 }
+
+
+
+
+export enum EditorPurposeTypes {
+  newTopic,
+  newReply,
+  replyEdit,
+  directReply
+}
+export interface EditorPurposeData{
+  type: EditorPurposeTypes;
+  replyRef?: ForumReply;
+}

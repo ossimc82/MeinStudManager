@@ -5,8 +5,8 @@ import { first } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { MatButton } from '@angular/material/button';
 
-import { ForumTopic, ForumReply, ForumTopicResultsContainer, ForumReplyResultsContainer, ForumCreatorInput } from './forum-post.model';
-import { ForumTopicCreator } from './editor/post-creator.component';
+import { ForumTopic, ForumReply, ForumTopicResultsContainer, ForumReplyResultsContainer, ForumCreatorInput, EditorPurposeData, EditorPurposeTypes } from './forum-post.model';
+import { ForumPostCreator } from './editor/post-creator.component';
 import { ForumService } from './forum.service';
 
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
@@ -51,7 +51,9 @@ export class ForumComponent implements OnInit {
   ]
 
   createNewTopic(){
-    const dialogRef = this.dialog.open(ForumTopicCreator); //Open Pop-Up
+    const dialogRef = this.dialog.open(ForumPostCreator); //Open Pop-Up
+    var purpose: EditorPurposeData = { type: EditorPurposeTypes.newTopic }
+    dialogRef.componentInstance.purposeData = purpose;
 
     dialogRef.afterClosed().subscribe(result => { //If Submitted new Topic
       if(!result){
@@ -81,7 +83,6 @@ export class ForumComponent implements OnInit {
   getAllTopicsFromPage(page: number){
     this.forumService.getTopics(page).subscribe((res: {}) => {
       var resContainer = <ForumTopicResultsContainer>res;
-      console.log("Hey something is there: " , resContainer)
       this.currentTopics = resContainer.items;
     }, (error: any) => {
       this.currentTopics = this.testData;

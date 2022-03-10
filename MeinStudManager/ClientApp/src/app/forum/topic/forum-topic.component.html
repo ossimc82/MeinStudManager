@@ -9,13 +9,16 @@
     <div class="reply-header-info">
       <em>am {{reply.creationDate}}</em>
       von <b>{{reply.authorName}}</b>
+        <ng-container *ngIf="reply.numberOfEdits > 0"> ({{reply.numberOfEdits}} mal Bearbeitet, zuletzt am {{reply.lastEdit}})</ng-container>
     </div>
 
     <br><br><b>{{reply.title}}</b>
 
     <br><br>
     {{reply.content}}
+    <button mat-flat-button (click)="createAnswer('direct', reply)">Direkt Antwort</button>
+    <button *ngIf="reply.authorId == userId" mat-flat-button (click)="editPost(reply)">Edit Post</button>
   </div>
 
-  <button mat-raised-button (click)="createAnswer()">Antworten</button>
+  <button mat-raised-button (click)="createAnswer('new')">Antworten</button>
 </div>
