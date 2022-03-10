@@ -33,7 +33,7 @@ export interface ForumReplyResultsContainer{
 }
 
 
-export interface TopicCreatorInput {
+export interface ForumCreatorInput {
   title: string;
   content: string;
 }

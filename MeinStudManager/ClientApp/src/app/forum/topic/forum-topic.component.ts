@@ -5,33 +5,39 @@ import { first } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { MatButton } from '@angular/material/button';
 
-import { ForumTopic, ForumReply, ForumTopicResultsContainer, ForumReplyResultsContainer, ForumCreatorInput } from './forum-post.model';
-import { ForumTopicCreator } from './editor/post-creator.component';
-import { ForumService } from './forum.service';
+import { ForumTopic, ForumReply, ForumTopicResultsContainer, ForumReplyResultsContainer, ForumCreatorInput } from '../forum-post.model';
+import { ForumTopicCreator } from '../editor/post-creator.component';
+import { ForumService } from '../forum.service';
 
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 
 @Component({
   selector: 'app-forum',
-  templateUrl: './forum.component.html',
-  styleUrls: ['./forum.component.css']
+  templateUrl: './forum-topic.component.html',
+  styleUrls: ['./forum-topic.component.css']
 })
-export class ForumComponent implements OnInit {
+export class ForumTopicComponent implements OnInit {
 
-  pageId = 1;
+  topicId = "";
+  pageNum = 1;
 
   constructor(public dialog: MatDialog, public forumService: ForumService, private router: Router, private route: ActivatedRoute) {}
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
-      var pNum = parseInt(params.get('pageNum'));
-      if(pNum){
-      this.pageId = pNum;
+      var topic = params.get('topicId');
+      var pageNum = parseInt(params.get('pageNum'));
+      if(topic){
+        this.topicId = topic;
+        this.getAllTopicReplies(this.topicId)
+      }
+      if(pageNum){
+        this.pageNum = pageNum;
       }
     })
-    console.log("We load page " , this.pageId)
-    this.getAllTopicsFromPage(this.pageId)
+
   }
   currentTopics: ForumTopic[] = [];
+  currentReplies: ForumReply[] = [];
   testData: ForumTopic[] = [
     {
       title: "Test",
@@ -58,33 +64,51 @@ export class ForumComponent implements OnInit {
         console.log("failure")
       }
       else{ //Create Topic + First Post
-        this.submitNewTopic(<ForumCreatorInput>result);
+       // this.submitNewTopic(<TopicCreatorInput>result);
       }
     });
   }
 
   showTopic(topic: ForumTopic){
-    this.router.navigate(['forum/' + this.pageId + "/topic/" + topic.id]);
+    this.router.navigate(['about']);
+    this.getAllTopicReplies(topic.id)
   }
 
-/* Service Communication Functions */
+  createAnswer(){
+    const dialogRef = this.dialog.open(ForumTopicCreator); //Open Pop-Up
 
-  submitNewTopic(topicCreate: ForumCreatorInput){
-    this.forumService.setNewTopic(topicCreate).subscribe((res: {}) => {
-      this.getAllTopicsFromPage(1)
+    dialogRef.afterClosed().subscribe(result => { //If Submitted new Topic
+      if(!result){
+        console.log("failure")
+      }
+      else{ //Create Topic + First Post
+        this.submitNewReply(<ForumCreatorInput>result);
+      }
+    });
+  }
+
+  navigateBackToTopics(){
+    this.router.navigate(['forum/' + this.pageNum]);
+  }
+
+
+  /* Service Communication Functions */
+
+  getAllTopicReplies(topicId: string){
+    this.forumService.getAllTopicReplies(topicId).subscribe((res: {}) => {
+      var resContainer = <ForumReplyResultsContainer>res;
+      this.currentReplies = resContainer.items;
     }, (error: any) => {
       //...
       }
     );
   }
 
-  getAllTopicsFromPage(page: number){
-    this.forumService.getTopics(page).subscribe((res: {}) => {
-      var resContainer = <ForumTopicResultsContainer>res;
-      console.log("Hey something is there: " , resContainer)
-      this.currentTopics = resContainer.items;
+  submitNewReply(reply: ForumCreatorInput){
+    this.forumService.setNewReply(this.topicId, reply).subscribe((res: {}) => {
+      this.getAllTopicReplies(this.topicId)
     }, (error: any) => {
-      this.currentTopics = this.testData;
+      //...
       }
     );
   }

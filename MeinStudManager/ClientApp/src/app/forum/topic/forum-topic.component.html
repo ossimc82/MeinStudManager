@@ -1,0 +1,21 @@
+<h1>Topic Page</h1>
+
+<button mat-raised-button (click)="navigateBackToTopics()">Back to Topics</button>
+
+<!-- Topic View -->
+<div>
+  <div *ngFor="let reply of currentReplies" class="reply-container">
+
+    <div class="reply-header-info">
+      <em>am {{reply.creationDate}}</em>
+      von <b>{{reply.authorName}}</b>
+    </div>
+
+    <br><br><b>{{reply.title}}</b>
+
+    <br><br>
+    {{reply.content}}
+  </div>
+
+  <button mat-raised-button (click)="createAnswer()">Antworten</button>
+</div>

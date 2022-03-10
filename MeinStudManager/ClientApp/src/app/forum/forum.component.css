@@ -5,17 +5,17 @@
   border-bottom: 1px;
 }
 
-.post-container {
+.topic-container {
   display: grid;
   border-style: solid;
   border-width: 2px;
 }
-.post-container:hover {
+.topic-container:hover {
   background-color: yellow;
   cursor:pointer;
 }
 
-.post{
+.topic{
   height: 80px;
   max-height: 80px;
 }

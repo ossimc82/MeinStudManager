@@ -1,5 +1,5 @@
 import { Component, Inject } from '@angular/core';
-import { TopicCreatorInput } from '../forum-post.model';
+import { ForumCreatorInput } from '../forum-post.model';
 
 import { MatButton } from '@angular/material/button';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -11,13 +11,13 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dial
 })
 export class ForumTopicCreator {
 
-  postData:TopicCreatorInput = {
+  postData:ForumCreatorInput = {
     title: "",
     content: ""
   };
 
   constructor(
-    public dialogRef: MatDialogRef<TopicCreatorInput>
+    public dialogRef: MatDialogRef<ForumCreatorInput>
   ) {}
 
   postDiscarded(){

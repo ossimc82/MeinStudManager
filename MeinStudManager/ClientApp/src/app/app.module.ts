@@ -26,6 +26,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { ForumService } from './forum/forum.service';
+import { ForumTopicComponent } from './forum/topic/forum-topic.component';
 
 
 
@@ -44,7 +45,8 @@ import { ForumService } from './forum/forum.service';
     PerformanceRecordComponent,
     StudyComponent,
     ForumComponent,
-    ForumTopicCreator
+    ForumTopicCreator,
+    ForumTopicComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),

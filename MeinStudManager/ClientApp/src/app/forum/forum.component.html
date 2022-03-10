@@ -2,11 +2,11 @@
 
 
 <!-- Topic Overview -->
-<div class="topic-overview-main-structure" *ngIf="!insideTopic">
+<div class="topic-overview-main-structure">
   <button mat-raised-button (click)="createNewTopic()">Neuer Beitrag</button>
 
-  <div class="post-container" *ngFor="let topic of currentTopics" (click)="showTopic(topic)">
-    <div class="post">
+  <div class="topic-container" *ngFor="let topic of currentTopics" (click)="showTopic(topic)">
+    <div class="topic">
       <b>{{topic.title}}</b><br>
       Last Reply: {{topic.lastReply}}
     </div>
@@ -15,18 +15,4 @@
   <div class="page-container">
     1 2 3 4 5
   </div>
-</div>
-
-
-<button *ngIf="insideTopic" (click)="navigateBackToTopics()">Back to Topics</button>
-
-<!-- Topic View -->
-<div *ngIf="insideTopic">
-  <div *ngFor="let reply of currentReplies">
-    von {{reply.authorName}}: {{reply.title}}
-    <br>
-    {{reply.content}}
-  </div>
-
-  <button mat-raised-button (click)="createAnswer()">Antworten</button>
 </div>

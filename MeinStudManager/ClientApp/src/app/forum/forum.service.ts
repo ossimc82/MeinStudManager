@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@angular/core";
-import { ForumReply, ForumTopic, TopicCreatorInput } from "./forum-post.model";
+import { ForumCreatorInput, ForumReply, ForumTopic } from "./forum-post.model";
 import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { Observable, throwError } from "rxjs";
 import { catchError, retry } from "rxjs/operators";
@@ -23,7 +23,7 @@ export class ForumService {
     )
   }
 
-  setNewTopic(newTopic: TopicCreatorInput){
+  setNewTopic(newTopic: ForumCreatorInput){
     return this.httpClient.post(this.baseUrl + this.endpoint + "/new", newTopic)
     .pipe(
       retry(1),
@@ -33,6 +33,14 @@ export class ForumService {
 
   getAllTopicReplies(topicId: string){
     return this.httpClient.get<ForumReply[]>(this.baseUrl + this.endpoint + "/topic/" + topicId)
+    .pipe(
+      retry(1),
+      catchError(this.processError)
+    )
+  }
+
+  setNewReply(topicId: string, newReply: ForumCreatorInput){
+    return this.httpClient.post(this.baseUrl + this.endpoint + "/topic/" + topicId + "/new", newReply)
     .pipe(
       retry(1),
       catchError(this.processError)
