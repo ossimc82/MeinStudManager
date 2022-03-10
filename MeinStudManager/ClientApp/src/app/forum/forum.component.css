@@ -11,16 +11,31 @@
   border-width: 2px;
 }
 .topic-container:hover {
-  background-color: yellow;
+  background-color: lightblue;
   cursor:pointer;
 }
 
 .topic{
-  height: 80px;
+  height: 50px;
   max-height: 80px;
 }
 
 .page-container{
   display: block;
   text-align: center;
+}
+.page-clickables-container{
+  display: inline-block;
+  padding-right: 5px;
+  color: blue;
+  text-decoration: underline;
+}
+.page-clickables-container:hover{
+  color: magenta;
+  cursor:pointer;
+}
+
+.create-new-topic-btn{
+  background-color: cornflowerblue;
+  max-width: 400px;
 }

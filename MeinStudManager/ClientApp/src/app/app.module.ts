@@ -27,8 +27,8 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { ForumService } from './forum/forum.service';
 import { ForumTopicComponent } from './forum/topic/forum-topic.component';
-
-
+import { ForumCustomDialog } from './forum/topic/customDialog/customDialog-component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
   declarations: [
@@ -46,6 +46,7 @@ import { ForumTopicComponent } from './forum/topic/forum-topic.component';
     StudyComponent,
     ForumComponent,
     ForumPostCreator,
+    ForumCustomDialog,
     ForumTopicComponent
   ],
   imports: [
@@ -57,7 +58,8 @@ import { ForumTopicComponent } from './forum/topic/forum-topic.component';
     ScheduleModule,
     BrowserAnimationsModule,
     MatDialogModule,
-    MatButtonModule
+    MatButtonModule,
+    MatProgressSpinnerModule
   ],
   providers: [{provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true},
     PlannerService,

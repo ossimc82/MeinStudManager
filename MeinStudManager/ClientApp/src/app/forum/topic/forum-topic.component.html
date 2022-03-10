@@ -1,23 +1,40 @@
-<h1>Topic Page</h1>
+<h1>Thema</h1>
 
-<button mat-raised-button (click)="navigateBackToTopics()">Back to Topics</button>
+<button mat-raised-button (click)="navigateBackToTopics()"><- Zurück zu Themen</button>
 
 <!-- Topic View -->
 <div>
+  <mat-spinner style="margin:0 auto;" *ngIf="loadingPosts"></mat-spinner>
+
   <div *ngFor="let reply of currentReplies" class="reply-container">
 
     <div class="reply-header-info">
-      <em>am {{reply.creationDate}}</em>
+      <em>am {{reply.creationDate | date: 'dd.MM.yyyy'}}, {{reply.creationDate | date: 'HH:mm:ss'}} Uhr</em>
       von <b>{{reply.authorName}}</b>
-        <ng-container *ngIf="reply.numberOfEdits > 0"> ({{reply.numberOfEdits}} mal Bearbeitet, zuletzt am {{reply.lastEdit}})</ng-container>
+        <ng-container *ngIf="reply.numberOfEdits > 0">
+          ({{reply.numberOfEdits}} mal Bearbeitet, zuletzt am {{reply.lastEdit | date: 'dd.MM.yyyy'}}, {{reply.lastEdit | date: 'HH:mm:ss'}})
+        </ng-container>
     </div>
 
     <br><br><b>{{reply.title}}</b>
 
     <br><br>
-    {{reply.content}}
-    <button mat-flat-button (click)="createAnswer('direct', reply)">Direkt Antwort</button>
-    <button *ngIf="reply.authorId == userId" mat-flat-button (click)="editPost(reply)">Edit Post</button>
+    <div class="reply-message" >{{reply.content}}</div>
+    <br>
+    <br>
+
+    <div class="user-options">
+      <button *ngIf="reply.authorId == userId" class="options-btn "mat-flat-button (click)="deletePost(reply)">Post löschen</button>
+      <button *ngIf="reply.authorId == userId" class="options-btn" mat-flat-button (click)="editPost(reply)">Post Bearbeiten</button>
+      <button class="options-btn" mat-flat-button (click)="createAnswer('direct', reply)">Direkt Antwort</button>
+    </div>
+
+    <div class="vote-options">
+      <button class="vote-btn" mat-button (click)="upVote(reply)">up ({{reply.numUpVotes}})</button>
+      <button class="vote-btn" mat-button (click)="downVote(reply)">down ({{reply.numDownVotes}})</button>
+      <button class="vote-btn"  mat-button (click)="removeVote(reply)">Bewertung löschen</button>
+    </div>
+
   </div>
 
   <button mat-raised-button (click)="createAnswer('new')">Antworten</button>

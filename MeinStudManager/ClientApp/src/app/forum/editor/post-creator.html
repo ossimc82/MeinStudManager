@@ -8,8 +8,8 @@
   <textarea #contentArea [(ngModel)]="postData.content"></textarea>
 
   <div class="editor-bottom-row">
-    <button (click)="postDiscarded()">Discard</button>
-    <button  [mat-dialog-close]="postData" >Submit</button>
+    <button (click)="postDiscarded()">Abbrechen</button>
+    <button (click)="postSubmitted()">Senden</button>
   </div>
 
 </div>

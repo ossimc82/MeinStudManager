@@ -7,3 +7,30 @@
 .reply-header-info {
   display: inline-block;
 }
+
+.reply-message {
+  background-color: azure;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.user-options{
+  display: inline-block;
+  text-align: end;
+}
+
+.options-btn{
+  height: 20px;
+  background-color: midnightblue;
+  padding-left: 10px;
+  line-height: normal;
+}
+
+.vote-options{
+  display: inline-block;
+  text-align: end;
+}
+
+.vote-btn{
+  height: 20px;
+  line-height: normal;
+}

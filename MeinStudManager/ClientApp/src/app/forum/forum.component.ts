@@ -18,6 +18,9 @@ import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 })
 export class ForumComponent implements OnInit {
 
+  loadingTopics:boolean = false;
+  pageIterationNumbers: number[] = [];
+  TOPICS_PER_SITE:number = 20;
   pageId = 1;
 
   constructor(public dialog: MatDialog, public forumService: ForumService, private router: Router, private route: ActivatedRoute) {}
@@ -36,17 +39,13 @@ export class ForumComponent implements OnInit {
     {
       title: "Test",
       lastReply: ""
-  //    content: "askdf;sdfjpsdjfosdfjdpfjsduohidfgyuhrojgkjfh0dfj84u3eh4tepfjre8o0tuwe9fjroehgrfidgnoifioerf80eu0v9234ur09uv300nu80nu83vnum08fvgnum34fgvnmhfvg4rhnm8fghm84vfghrfg8h4vgfhu834fvg8ruv8v4g8vgh8uvg4h8vgh484vgh8vg4hm8hh808h43h834h83v50gervg0um9-ervgikerfvgkerfvgkoervgkfm gk gerjmkoe rgjmk gerjm gerjmie rgmi erg gm erpj gjmerm gjermjg mje gmgmig. Danke fuers lesen!"
     },
     {
       title: "Tomatensosse",
-      lastReply: ""
-     // content: "Hey Leute, mir ist letztens der Topf vom Herd geflogen und jetzt hab ich keine Tomatensosse mehr. Kann mir vielleicht jemand welche leihen?"
-    },
+      lastReply: ""    },
     {
       title: "WTF",
       lastReply: ""
-  //    content: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
     }
   ]
 
@@ -67,13 +66,27 @@ export class ForumComponent implements OnInit {
 
   showTopic(topic: ForumTopic){
     this.router.navigate(['forum/' + this.pageId + "/topic/" + topic.id]);
+
+  }
+
+  goToPage(pageNumber: number){
+    this.pageId = pageNumber;
+    this.router.navigateByUrl('/', {skipLocationChange: true}).then(()=>
+    this.router.navigate(['forum/' + this.pageId]));
+
+  }
+
+  setPageAmount(totalTopicAmout: number){ //Set Array of page numbers; to be looped in template
+    for(var i = 1; i <= Math.ceil(totalTopicAmout / this.TOPICS_PER_SITE); i++){
+      this.pageIterationNumbers.push(i);
+    }
   }
 
 /* Service Communication Functions */
 
   submitNewTopic(topicCreate: ForumCreatorInput){
     this.forumService.setNewTopic(topicCreate).subscribe((res: {}) => {
-      this.getAllTopicsFromPage(1)
+      this.getAllTopicsFromPage(this.pageId)
     }, (error: any) => {
       //...
       }
@@ -81,11 +94,15 @@ export class ForumComponent implements OnInit {
   }
 
   getAllTopicsFromPage(page: number){
+    this.loadingTopics = true;
     this.forumService.getTopics(page).subscribe((res: {}) => {
       var resContainer = <ForumTopicResultsContainer>res;
       this.currentTopics = resContainer.items;
+      this.loadingTopics = false;
+      this.setPageAmount(resContainer.totalCount);
     }, (error: any) => {
       this.currentTopics = this.testData;
+      this.loadingTopics = false;
       }
     );
   }

@@ -11,6 +11,7 @@ import { ForumService } from '../forum.service';
 
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { UserService } from 'src/app/shared/user/user.service';
+import { ForumCustomDialog } from './customDialog/customDialog-component';
 
 @Component({
   selector: 'app-forum',
@@ -18,6 +19,7 @@ import { UserService } from 'src/app/shared/user/user.service';
   styleUrls: ['./forum-topic.component.css']
 })
 export class ForumTopicComponent implements OnInit {
+  loadingPosts = false;
   userId = "";
   topicId = "";
   pageNum = 1;
@@ -54,7 +56,7 @@ export class ForumTopicComponent implements OnInit {
     }); //Open Pop-Up
     dialogRef.componentInstance.purposeData = purpose;
 
-    dialogRef.afterClosed().subscribe(result => { //If Submitted new Topic
+    dialogRef.afterClosed().subscribe(result => {
       if(!result){
         console.log("failure")
       }
@@ -69,15 +71,24 @@ export class ForumTopicComponent implements OnInit {
       type: EditorPurposeTypes.replyEdit,
       replyRef: post
     };
-    const dialogRef = this.dialog.open(ForumPostCreator); //Open Pop-Up
+    const dialogRef = this.dialog.open(ForumPostCreator);
     dialogRef.componentInstance.purposeData = purpose;
 
-    dialogRef.afterClosed().subscribe(result => { //If Submitted new Topic
+    dialogRef.afterClosed().subscribe(result => {
       if(!result){
         console.log("failure")
       }
       else{ //Create Topic + First Post
         this.submitEdit(<ForumCreatorInput>result, post);
+      }
+    });
+  }
+
+  deletePost(post: ForumReply){
+    const dialogRef = this.dialog.open(ForumCustomDialog)
+    dialogRef.afterClosed().subscribe(result => {
+      if(result){
+        this.deleteReply(post)
       }
     });
   }
@@ -90,10 +101,13 @@ export class ForumTopicComponent implements OnInit {
   /* Service Communication Functions */
 
   getAllTopicReplies(topicId: string){
+    this.loadingPosts = true;
     this.forumService.getAllTopicReplies(topicId).subscribe((res: {}) => {
       var resContainer = <ForumReplyResultsContainer>res;
       this.currentReplies = resContainer.items;
+      this.loadingPosts = false
     }, (error: any) => {
+      this.loadingPosts = false
       //...
       }
     );
@@ -110,6 +124,42 @@ export class ForumTopicComponent implements OnInit {
 
   submitEdit(reply: ForumCreatorInput, post: ForumReply){
     this.forumService.editReply(reply, this.topicId, post.id).subscribe((res: {}) => {
+      this.getAllTopicReplies(this.topicId)
+    }, (error: any) => {
+      //...
+      }
+    );
+  }
+
+  deleteReply(post: ForumReply){
+    this.forumService.deleteReply(this.topicId, post.id).subscribe((res: {}) => {
+      this.getAllTopicReplies(this.topicId)
+    }, (error: any) => {
+      //...
+      }
+    );
+  }
+
+  upVote(post: ForumReply){
+    this.forumService.upVote(this.topicId, post.id).subscribe((res: {}) => {
+      this.getAllTopicReplies(this.topicId)
+    }, (error: any) => {
+      //...
+      }
+    );
+  }
+
+  downVote(post: ForumReply){
+    this.forumService.downVote(this.topicId, post.id).subscribe((res: {}) => {
+      this.getAllTopicReplies(this.topicId)
+    }, (error: any) => {
+      //...
+      }
+    );
+  }
+
+  removeVote(post: ForumReply){
+    this.forumService.removeVote(this.topicId, post.id).subscribe((res: {}) => {
       this.getAllTopicReplies(this.topicId)
     }, (error: any) => {
       //...
