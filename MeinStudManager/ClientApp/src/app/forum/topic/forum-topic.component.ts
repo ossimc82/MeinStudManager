@@ -13,6 +13,7 @@ import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { UserService } from 'src/app/shared/user/user.service';
 import { ForumCustomDialog } from './customDialog/customDialog-component';
 
+
 @Component({
   selector: 'app-forum',
   templateUrl: './forum-topic.component.html',
@@ -67,6 +68,8 @@ export class ForumTopicComponent implements OnInit {
   }
 
   editPost(post: ForumReply){
+    post.title = this.decodeHtml(post.title)
+    post.content = this.decodeHtml(post.content)
     var purpose: EditorPurposeData = {
       type: EditorPurposeTypes.replyEdit,
       replyRef: post
@@ -97,6 +100,19 @@ export class ForumTopicComponent implements OnInit {
     this.router.navigate(['forum/' + this.pageNum]);
   }
 
+  getUpVoteText(upvotes: number){
+    return "&#128077 (" + upvotes + ")";
+  }
+
+  getDownVoteText(upvotes: number){
+    return "&#128078 (" + upvotes + ")";
+  }
+
+  private decodeHtml(html: string) {
+    var txt = document.createElement("textarea");
+    txt.innerHTML = html;
+    return txt.value;
+   }
 
   /* Service Communication Functions */
 

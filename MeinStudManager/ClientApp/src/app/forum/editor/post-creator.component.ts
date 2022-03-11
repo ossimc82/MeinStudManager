@@ -1,18 +1,16 @@
-import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { EditorPurposeData, EditorPurposeTypes, ForumCreatorInput, ForumReply } from '../forum-post.model';
 
 import { MatButton } from '@angular/material/button';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ForumCustomDialog } from '../topic/customDialog/customDialog-component';
 
-
-
 @Component({
   selector: 'app-postEditor',
   templateUrl: './post-creator.html',
   styleUrls: ['./post-creator.component.css']
 })
-export class ForumPostCreator implements OnInit{
+export class ForumPostCreator implements OnInit {
 
   TITLE_MIN_CHARACTERS: number = 3;
   TITLE_MAX_CHARACTERS: number = 128;
@@ -33,6 +31,7 @@ export class ForumPostCreator implements OnInit{
   ) {}
 
   ngOnInit(): void {
+    console.log(this.purposeData)
     //initialize Purpose
     if(this.purposeData.type == EditorPurposeTypes.newReply){
       this.headerText = "Antwort schreiben"
@@ -79,7 +78,7 @@ export class ForumPostCreator implements OnInit{
     }
     else if(this.postData.content.length < this.MESSAGE_MIN_CHARACTERS){
       cantSubmit = true;
-      reason = "Fehler: Nachricht zu kurz. Mind. " + this.MESSAGE_MIN_CHARACTERS + "Character erforderlich."
+      reason = "Fehler: Nachricht zu kurz. Mind. " + this.MESSAGE_MIN_CHARACTERS + " Character erforderlich."
     }
     else if(this.postData.content.length > this.MESSAGE_MAX_CHARACTERS){
       cantSubmit = true;

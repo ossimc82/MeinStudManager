@@ -14,7 +14,7 @@ import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 @Component({
   selector: 'app-forum',
   templateUrl: './forum.component.html',
-  styleUrls: ['./forum.component.css']
+  styleUrls: ['./forum.component.scss']
 })
 export class ForumComponent implements OnInit {
 
@@ -31,9 +31,10 @@ export class ForumComponent implements OnInit {
       this.pageId = pNum;
       }
     })
-    console.log("We load page " , this.pageId)
     this.getAllTopicsFromPage(this.pageId)
   }
+
+  loadedTopicObj: ForumTopicResultsContainer = null;
   currentTopics: ForumTopic[] = [];
   testData: ForumTopic[] = [
     {
@@ -82,11 +83,16 @@ export class ForumComponent implements OnInit {
     }
   }
 
+  goToTopicPage(topicAmount: number){
+
+  }
+
 /* Service Communication Functions */
 
   submitNewTopic(topicCreate: ForumCreatorInput){
     this.forumService.setNewTopic(topicCreate).subscribe((res: {}) => {
-      this.getAllTopicsFromPage(this.pageId)
+      //set to page where new Topic is located
+      this.goToPage(Math.ceil((this.loadedTopicObj.totalCount + 1) / this.TOPICS_PER_SITE))
     }, (error: any) => {
       //...
       }
@@ -96,10 +102,10 @@ export class ForumComponent implements OnInit {
   getAllTopicsFromPage(page: number){
     this.loadingTopics = true;
     this.forumService.getTopics(page).subscribe((res: {}) => {
-      var resContainer = <ForumTopicResultsContainer>res;
-      this.currentTopics = resContainer.items;
+      this.loadedTopicObj = <ForumTopicResultsContainer>res;
+      this.currentTopics = this.loadedTopicObj.items;
       this.loadingTopics = false;
-      this.setPageAmount(resContainer.totalCount);
+      this.setPageAmount(this.loadedTopicObj.totalCount);
     }, (error: any) => {
       this.currentTopics = this.testData;
       this.loadingTopics = false;

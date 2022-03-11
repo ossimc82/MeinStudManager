@@ -2,10 +2,10 @@
 
 <div class="editor-main-container">
   Title:
-  <input #titleArea matInput [(ngModel)]="postData.title">
+  <input class="postCreator-title-field" #titleArea matInput [(ngModel)]="postData.title">
 
   Content:
-  <textarea #contentArea [(ngModel)]="postData.content"></textarea>
+  <textarea class="postCreator-content-field" #contentArea [(ngModel)]="postData.content"></textarea>
 
   <div class="editor-bottom-row">
     <button (click)="postDiscarded()">Abbrechen</button>

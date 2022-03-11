@@ -1,16 +1,57 @@
+.topicSiteContainer{
+  padding-top: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.topicBackContainer{
+  padding-bottom: 10px;
+}
+
+.back-to-topics-topic-btn{
+  background-color: cornflowerblue;
+  max-width: 400px;
+}
+.back-to-topics-topic-btn:hover{
+  background-color: #5E7AC9;
+}
+
+.postsArea{
+  border-style: none none solid none;
+  border-width: 2px;
+}
+
 .reply-container {
   display: grid;
-  border-style: solid;
+  border-style: solid solid none solid;
   border-width: 2px;
+  background-color: #fafafa;
 }
 
 .reply-header-info {
   display: inline-block;
+  border-style: none none solid none;
+  border-width: 1px;
+
+  background-image: linear-gradient(to bottom right, rgb(217, 222, 248), rgb(100, 149, 237));
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.reply-title{
+  padding-top: 4px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  font-size: 13pt;
 }
 
 .reply-message {
-  background-color: azure;
+
   font-family: Verdana, Geneva, Tahoma, sans-serif;
+  white-space: pre-wrap;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
 .user-options{
@@ -20,9 +61,12 @@
 
 .options-btn{
   height: 20px;
-  background-color: midnightblue;
+  background: linear-gradient(to bottom right, rgb(153, 165, 228),rgb(100, 149, 237));
   padding-left: 10px;
   line-height: normal;
+}
+.options-btn:hover{
+  background: linear-gradient(to bottom right,   #5E7AC9,  #4e6bb9);
 }
 
 .vote-options{
@@ -33,4 +77,20 @@
 .vote-btn{
   height: 20px;
   line-height: normal;
+}
+.vote-btn:hover{
+  color: #a6a0ff
+}
+
+.answerContainer{
+  padding-top: 10px;
+}
+
+
+.answer-btn{
+  background-color: cornflowerblue;
+  max-width: 400px;
+}
+.answer-btn:hover{
+  background-color: #5E7AC9
 }

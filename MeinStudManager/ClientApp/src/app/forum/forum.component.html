@@ -1,26 +1,31 @@
-<h1>Mein Studplaner - Das Forum</h1>
+<div class="topics-site-main-container">
+  <h1>Mein Studplaner - Forum</h1>
+  <!-- Topic Overview -->
+  <div class="topic-overview-main-structure">
 
-
-<!-- Topic Overview -->
-<div class="topic-overview-main-structure">
-
-  <button class="create-new-topic-btn" mat-raised-button (click)="createNewTopic()">Neuer Beitrag</button>
-  <br>
-  Showing Page: {{pageId}}
-
-  <mat-spinner style="margin:0 auto;" *ngIf="loadingTopics" ></mat-spinner>
-
-  <div class="topic-container" *ngFor="let topic of currentTopics" (click)="showTopic(topic)">
-    <div class="topic">
-      <b>{{topic.title}}</b><br>
-      Last Reply: {{topic.lastReply}}
+    <div class="topRowContainer" *ngIf="loadedTopicObj">
+      <div class="pageStats">
+        Seite {{pageId}} - Zeige  {{currentTopics.length}} von {{loadedTopicObj.totalCount}} Themen
+      </div>
+      <button class="create-new-topic-btn" mat-raised-button (click)="createNewTopic()">Neues Thema</button>
     </div>
-  </div>
 
-  <div class="page-container">
-    Page<br>
-    <div class="page-clickables-container" *ngFor="let number of pageIterationNumbers" (click)="goToPage(number)">
-      {{number}}
+    <mat-spinner style="margin:0 auto;" *ngIf="loadingTopics" ></mat-spinner>
+
+    <div class="topicsArea" *ngIf="currentTopics.length > 0">
+      <div class="topic-container" *ngFor="let topic of currentTopics" (click)="showTopic(topic)">
+        <div class="topic">
+          <div class="topic-title-text" [innerHTML]="topic.title"></div>
+          <div class="topic-last-post">Letzter Post: {{topic.lastReply | date: 'dd.MM.yyyy'}}, {{topic.lastReply | date: 'HH:mm:ss'}}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-container" *ngIf="!loadingTopics">
+      Seite<br>
+      <div class="page-clickables-container" *ngFor="let number of pageIterationNumbers" (click)="goToPage(number)">
+        {{number}}
+      </div>
     </div>
   </div>
 </div>

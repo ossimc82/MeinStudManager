@@ -20,7 +20,6 @@ import { PerformanceRecordComponent } from './profile/performance-record/perform
 import { PlannerService } from './planner/planner/planner.service';
 import { StudyComponent } from './study/study.component';
 import { ForumComponent } from './forum/forum.component';
-import { ForumPostCreator } from './forum/editor/post-creator.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { MatDialogModule } from '@angular/material/dialog';
@@ -29,6 +28,7 @@ import { ForumService } from './forum/forum.service';
 import { ForumTopicComponent } from './forum/topic/forum-topic.component';
 import { ForumCustomDialog } from './forum/topic/customDialog/customDialog-component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ForumPostCreatorModule } from './forum/editor/post-creator.module';
 
 @NgModule({
   declarations: [
@@ -45,7 +45,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     PerformanceRecordComponent,
     StudyComponent,
     ForumComponent,
-    ForumPostCreator,
     ForumCustomDialog,
     ForumTopicComponent
   ],
@@ -59,7 +58,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     BrowserAnimationsModule,
     MatDialogModule,
     MatButtonModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    ForumPostCreatorModule
   ],
   providers: [{provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true},
     PlannerService,
