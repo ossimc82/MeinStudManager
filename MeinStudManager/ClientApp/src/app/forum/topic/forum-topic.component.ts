@@ -12,6 +12,7 @@ import { ForumService } from '../forum.service';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { UserService } from 'src/app/shared/user/user.service';
 import { ForumCustomDialog } from './customDialog/customDialog-component';
+import { AuthResponse } from 'src/app/auth/auth.service';
 
 
 @Component({
@@ -20,6 +21,7 @@ import { ForumCustomDialog } from './customDialog/customDialog-component';
   styleUrls: ['./forum-topic.component.css']
 })
 export class ForumTopicComponent implements OnInit {
+  authorizedToDelete = false;
   postPageIterationNumbers: number[] = [];
   loadedReplyObj: ForumReplyResultsContainer = null;
   loadingPosts = false;
@@ -45,6 +47,8 @@ export class ForumTopicComponent implements OnInit {
       this.getAllTopicReplies(this.topicId, this.postPageNum)
     })
     this.userId = this.userService.getUserId()
+
+    this.getServerRole()
   }
   currentReplies: ForumReply[] = [];
   REPLIES_PER_SITE: number = 20;
@@ -128,6 +132,31 @@ export class ForumTopicComponent implements OnInit {
     this.postPageNum = pageNum;
     this.router.navigateByUrl('/', {skipLocationChange: true}).then(()=>
     this.router.navigate(['forum/' + this.topicPageNum + '/topic/' + this.topicId + '/' + this.postPageNum]));
+  }
+
+  getServerRole(){ //Sets this.authorizedToDelete according to role on the Server. Can delete only as Admin or Mod
+    //get role from local storage
+    var decrypted = JSON.parse(atob((<AuthResponse>JSON.parse(localStorage.getItem('userData'))).token.split('.')[1]));
+    var datObj = decrypted["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]
+    if(datObj){
+
+      if(typeof datObj === 'string'){ //if string
+        var role: string = <string>datObj;
+
+        if(role == "Moderators" || role == "Administrators"){
+          this.authorizedToDelete = true;
+        }
+      }
+      else if (typeof datObj[Symbol.iterator] === 'function'){ //if iterable (Array)
+        for(let roleobj of datObj){
+          console.log(roleobj)
+          if(<string>roleobj == "Moderators" || <string>roleobj == "Administrators"){
+            this.authorizedToDelete = true;
+            break;
+          }
+        }
+      }
+    }
   }
 
   /* Service Communication Functions */

@@ -31,7 +31,7 @@
       <br>
 
       <div class="user-options">
-        <button *ngIf="reply.authorId == userId" class="options-btn "mat-flat-button (click)="deletePost(reply)">Post löschen</button>
+        <button *ngIf="authorizedToDelete" class="options-btn "mat-flat-button (click)="deletePost(reply)">Post löschen</button>
         <button *ngIf="reply.authorId == userId" class="options-btn" mat-flat-button (click)="editPost(reply)">Post Bearbeiten</button>
         <button class="options-btn" mat-flat-button (click)="createAnswer('direct', reply)">Direkt Antwort</button>
       </div>
