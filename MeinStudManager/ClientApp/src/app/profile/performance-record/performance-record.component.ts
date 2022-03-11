@@ -1,7 +1,8 @@
 import { Component, DoCheck, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Observable, Subject, Subscription } from 'rxjs';
-import { PerformanceRecordService, resGradesData, resSubject, resSubjects, UniSubject } from './performance-record.service';
+import {  pipe, Subscription } from 'rxjs';
+import { PerformanceRecordService } from './performance-record.service';
+import { UniSubject, UniSubjectReq } from './uni-subject.model';
 
 
 @Component({
@@ -38,6 +39,9 @@ export class PerformanceRecordComponent implements OnInit, OnDestroy, DoCheck {
   gradesForm: FormGroup;
   changeGradeForm: FormGroup;
 
+  errorPR: boolean;
+  errorPRchangeGrade: boolean;
+
   constructor(private subjectService : PerformanceRecordService) { }
 
   ngDoCheck(): void {
@@ -54,7 +58,9 @@ export class PerformanceRecordComponent implements OnInit, OnDestroy, DoCheck {
   ngOnInit(): void {
     this.setUpForms()
     this.addGradesVisible = false;
-    this.changeGradeVisible = true; // change after testing
+    this.changeGradeVisible = false;
+    this.errorPR = false;
+    this. errorPRchangeGrade = false;
     this.getGrades();
   }
 
@@ -69,7 +75,6 @@ export class PerformanceRecordComponent implements OnInit, OnDestroy, DoCheck {
   }
 
   getGrades() {
-
     this.sub = this.subjectService.getGrades().subscribe(
       res => {
         for (let i = 0; i < res.length; i++) {
@@ -97,7 +102,7 @@ export class PerformanceRecordComponent implements OnInit, OnDestroy, DoCheck {
               this.sum = this.sum + res[i].subjects[j].grade;
             }
           }
-          if (res[i].name === 'Wahlpflichtfächer') {
+          if (res[i].name === 'Wahlpflichtfach') {
             for (let j =0; j < res[i].subjects.length; j++) {
               this.subjectsSectionOptional.push(new UniSubject(
                 res[i].subjects[j].name,
@@ -113,30 +118,65 @@ export class PerformanceRecordComponent implements OnInit, OnDestroy, DoCheck {
       }
     );
   }
-  setChangeGradesVisible() {
+
+  resetGrades() {
+    this.subjectsSectionOne = [];
+    this.subjectsSectionTwo = [];
+    this.subjectsSectionOptional = [];
+    this.sum = 0;
+    this.count =0;
+    this.averageGrade='';
+    this.cpTotal=0;
+  }
+
+  setAddGradesVisible() {
     this.addGradesVisible = !this.addGradesVisible;
+    this.onAbortEdit();
   }
 
   setUpForms() {
     this.gradesForm = new FormGroup(
       {
-        'subject' : new FormControl(null, Validators.required),
-        'grade' : new FormControl(null, Validators.required),
-        'creditPoints' : new FormControl(null ,Validators.required),
-        'studySection' : new FormControl("subjectsSectionOne", Validators.required)
+        'subject' : new FormControl(null, [Validators.required, Validators.minLength(5)]),
+        //////////////////////
+        'grade' : new FormControl(null, [Validators.required,Validators.pattern(/[+]?([1-4]*[\,\.]{1}[0-9]+|[0-5])/), Validators.maxLength(3)]),
+        ////////////
+        'creditPoints' : new FormControl(null ,[Validators.required, Validators.pattern(/^-?(0|[1-9]\d*)?$/), Validators.maxLength(1)]),
+        'studySection' : new FormControl("1. Studienabschnitt", Validators.required)
       }
     );
     this.changeGradeForm = new FormGroup({
-      'grade' : new FormControl({value: '', disabled: true}, Validators.required)
+      'grade' : new FormControl({value: '', disabled: true}, [Validators.required,Validators.pattern(/[+]?([1-4]*[\,\.]{1}[0-9]+|[0-5])/), Validators.maxLength(3)])
     })
 
   }
 
   submitGrade() {
-    console.log(this.gradesForm.value)
+    console.log(this.gradesForm.value);
+
+    this.subjectService.postGrade(new UniSubjectReq(
+      this.gradesForm.get('studySection').value,
+      this.gradesForm.get('subject').value,
+      this.gradesForm.get('grade').value.replaceAll(',', '.'),
+      this.gradesForm.get('creditPoints').value,
+    )).subscribe(
+      res => {
+        console.log('erforlreich neue Note gespeichert');
+        this.resetGrades();
+        this.getGrades();
+        this.addGradesVisible= false;
+        this.errorPR = false;
+      },
+      errorRes => {
+        this.errorPR = true;
+        console.log('Fehler beim speichern: ' + errorRes);
+      }
+    );
+
   }
 
   onEditSubject(subject : UniSubject, studySection : string) {
+    this.addGradesVisible = false;
     this.changeGradeVisible=true;
     this.subjectName = subject.name;
     this.subjectGrade = subject.grade.toString();
@@ -145,6 +185,7 @@ export class PerformanceRecordComponent implements OnInit, OnDestroy, DoCheck {
     this.changeGradeForm.patchValue({
       'grade' :  subject.grade
     });
+
   }
 
   onAbortEdit() {
@@ -156,18 +197,56 @@ export class PerformanceRecordComponent implements OnInit, OnDestroy, DoCheck {
     if (this.editMode) {
       this.changeGradeForm.get('grade').enable();
     } else {
-      // update logic here
-      // always clear and fetch after update
-      this.subjectGrade = this.changeGradeForm.get('grade').value;
-      console.log(this.subjectName);
-      console.log(this.subjectGrade);
+      this.subjectGrade = this.changeGradeForm.get('grade').value.replaceAll(',', '.');
+
       this.changeGradeForm.get('grade').disable();
+      this.subjectService.putGrade(new UniSubjectReq(
+        this.subjectSection,
+        this.subjectName,
+        +this.subjectGrade,
+        +this.subjectCP
+      )).subscribe(
+        res => {
+          console.log('erforlreich neue Note updated');
+          this.resetGrades();
+          this.getGrades();
+          this.changeGradeVisible = false;
+          this.errorPRchangeGrade = false;
+        },
+        errorRes => {
+          this.errorPRchangeGrade = true;
+          console.log('Fehler beim updaten');
+        }
+      );
     }
 
   }
+
   onDeleteGrade() {
     console.log(this.subjectName);
-    // call service and delete here
+
+    this.subjectService.deleteGrade(new UniSubjectReq(
+      this.subjectSection,
+      this.subjectName,
+      +this.subjectGrade,
+      +this.subjectCP,
+    )).subscribe( res => {
+      console.log('erforlreich  Note gelöscht');
+      this.resetGrades();
+      this.getGrades();
+      this.errorPR = false;
+    },
+    errorRes => {
+      this.errorPR = true;
+      console.log('Fehler beim löschen ' + errorRes);
+    });
+    this.showSubjectsSectionOne= false;
+    this.showSubjectsSectionTwo= false;
+    this.showSubjectsSectionOptional = false;
+    this.resetGrades();
+    this.getGrades();
+    this.onAbortEdit();
   }
+
 
 }
