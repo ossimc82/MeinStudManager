@@ -19,8 +19,16 @@ import { ChangeProfileComponent } from './profile/change-profile/change-profile.
 import { PerformanceRecordComponent } from './profile/performance-record/performance-record.component';
 import { PlannerService } from './planner/planner/planner.service';
 import { StudyComponent } from './study/study.component';
+import { ForumComponent } from './forum/forum.component';
+import { ForumPostCreator } from './forum/editor/post-creator.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { ForumService } from './forum/forum.service';
+import { ForumTopicComponent } from './forum/topic/forum-topic.component';
+import { ForumCustomDialog } from './forum/topic/customDialog/customDialog-component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
   declarations: [
@@ -35,7 +43,11 @@ import { StudyComponent } from './study/study.component';
     PlannerComponent,
     ChangeProfileComponent,
     PerformanceRecordComponent,
-    StudyComponent
+    StudyComponent,
+    ForumComponent,
+    ForumPostCreator,
+    ForumCustomDialog,
+    ForumTopicComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -43,10 +55,16 @@ import { StudyComponent } from './study/study.component';
     FormsModule,
     ReactiveFormsModule,
     AppRoutingModule,
-    ScheduleModule
+    ScheduleModule,
+    BrowserAnimationsModule,
+    MatDialogModule,
+    MatButtonModule,
+    MatProgressSpinnerModule
   ],
   providers: [{provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true},
-    PlannerService],
+    PlannerService,
+    ForumService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -1,0 +1,41 @@
+.topic-overview-main-structure {
+  display: grid;
+  grid-row: 50px 2000px 50px; /*header (neuer Beitrag), posts, page selection*/
+  border-top: 1px;
+  border-bottom: 1px;
+}
+
+.topic-container {
+  display: grid;
+  border-style: solid;
+  border-width: 2px;
+}
+.topic-container:hover {
+  background-color: lightblue;
+  cursor:pointer;
+}
+
+.topic{
+  height: 50px;
+  max-height: 80px;
+}
+
+.page-container{
+  display: block;
+  text-align: center;
+}
+.page-clickables-container{
+  display: inline-block;
+  padding-right: 5px;
+  color: blue;
+  text-decoration: underline;
+}
+.page-clickables-container:hover{
+  color: magenta;
+  cursor:pointer;
+}
+
+.create-new-topic-btn{
+  background-color: cornflowerblue;
+  max-width: 400px;
+}

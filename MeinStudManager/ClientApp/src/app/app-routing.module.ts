@@ -9,6 +9,8 @@ import { ChangeProfileComponent } from "./profile/change-profile/change-profile.
 import { PerformanceRecordComponent } from "./profile/performance-record/performance-record.component";
 import { ProfileComponent } from "./profile/profile.component";
 import { StudyComponent } from "./study/study.component";
+import { ForumComponent } from "./forum/forum.component"
+import { ForumTopicComponent } from "./forum/topic/forum-topic.component";
 
 
 // add canActivate: [AuthGuard] to route if route should only be accessible after login
@@ -26,6 +28,9 @@ const appRoutes: Routes = [
   { path: 'login', component: AuthComponent  },
   { path: 'register', component: RegisterComponent },
   { path: 'planner', component: PlannerComponent },
+  { path: 'forum', component: ForumComponent },
+  { path: 'forum/:pageNum', component: ForumComponent },
+  { path: 'forum/:pageNum/topic/:topicId', component: ForumTopicComponent },
   {path: '**', redirectTo: '/home'}
 ]
 

@@ -1,0 +1,26 @@
+<h1>Mein Studplaner - Das Forum</h1>
+
+
+<!-- Topic Overview -->
+<div class="topic-overview-main-structure">
+
+  <button class="create-new-topic-btn" mat-raised-button (click)="createNewTopic()">Neuer Beitrag</button>
+  <br>
+  Showing Page: {{pageId}}
+
+  <mat-spinner style="margin:0 auto;" *ngIf="loadingTopics" ></mat-spinner>
+
+  <div class="topic-container" *ngFor="let topic of currentTopics" (click)="showTopic(topic)">
+    <div class="topic">
+      <b>{{topic.title}}</b><br>
+      Last Reply: {{topic.lastReply}}
+    </div>
+  </div>
+
+  <div class="page-container">
+    Page<br>
+    <div class="page-clickables-container" *ngFor="let number of pageIterationNumbers" (click)="goToPage(number)">
+      {{number}}
+    </div>
+  </div>
+</div>

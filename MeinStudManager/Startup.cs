@@ -62,7 +62,7 @@ namespace MeinStudManager
                 {
                     Version = "v1",
                     Title = "MeinStudManager backend API",
-                    Description = "The backend documentation of from MeinStudManager"
+                    Description = "The backend documentation from MeinStudManager"
                 });
 
                 var jwtSecurityScheme = new OpenApiSecurityScheme

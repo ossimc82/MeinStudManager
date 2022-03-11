@@ -19,9 +19,9 @@ export class PlannerService {
     })
   }
   getEvents(beginDate: Date, endDate: Date): Observable<timeTableData[]>{
-    const params = new HttpParams();
-    params.set('begin', JSON.stringify(beginDate));
-    params.set('end', JSON.stringify(endDate));
+    const params = new HttpParams()
+    .set('begin', beginDate.toISOString())
+    .set('end', endDate.toISOString());
     return this.httpClient.get<timeTableData[]>(this.baseUrl + this.endpoint, {params: params})
     .pipe(
       retry(1),

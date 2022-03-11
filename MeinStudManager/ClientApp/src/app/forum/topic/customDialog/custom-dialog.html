@@ -1,0 +1,6 @@
+<h3>{{text}}</h3>
+
+<div class="customDialog-bottom-row">
+  <button *ngIf="!onlyConfirm" [mat-dialog-close]="false">Nein</button>
+  <button [mat-dialog-close]="true">{{confirmText}}</button>
+</div>
