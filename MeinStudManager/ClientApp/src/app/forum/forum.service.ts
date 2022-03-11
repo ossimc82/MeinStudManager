@@ -31,8 +31,10 @@ export class ForumService {
     )
   }
 
-  getAllTopicReplies(topicId: string){
-    return this.httpClient.get<ForumReply[]>(this.baseUrl + this.endpoint + "/topic/" + topicId)
+  getAllTopicReplies(topicId: string, page: number = 1){
+    const params = new HttpParams()
+    .set('page', page)
+    return this.httpClient.get<ForumReply[]>(this.baseUrl + this.endpoint + "/topic/" + topicId, {params: params})
     .pipe(
       retry(1),
       catchError(this.processError)

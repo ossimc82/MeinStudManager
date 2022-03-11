@@ -74,17 +74,13 @@ export class ForumComponent implements OnInit {
     this.pageId = pageNumber;
     this.router.navigateByUrl('/', {skipLocationChange: true}).then(()=>
     this.router.navigate(['forum/' + this.pageId]));
-
   }
 
   setPageAmount(totalTopicAmout: number){ //Set Array of page numbers; to be looped in template
+    this.pageIterationNumbers = []
     for(var i = 1; i <= Math.ceil(totalTopicAmout / this.TOPICS_PER_SITE); i++){
       this.pageIterationNumbers.push(i);
     }
-  }
-
-  goToTopicPage(topicAmount: number){
-
   }
 
 /* Service Communication Functions */

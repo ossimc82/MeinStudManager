@@ -20,31 +20,34 @@ import { ForumCustomDialog } from './customDialog/customDialog-component';
   styleUrls: ['./forum-topic.component.css']
 })
 export class ForumTopicComponent implements OnInit {
+  postPageIterationNumbers: number[] = [];
+  loadedReplyObj: ForumReplyResultsContainer = null;
   loadingPosts = false;
   userId = "";
   topicId = "";
-  pageNum = 1;
+  topicPageNum = 1;
+  postPageNum = 1;
   constructor(public dialog: MatDialog, public forumService: ForumService, public userService: UserService, private router: Router, private route: ActivatedRoute) {}
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
       var topic = params.get('topicId');
       var pageNum = parseInt(params.get('pageNum'));
+      var repliesPageNum = parseInt(params.get('replyPageNum'))
       if(topic){
         this.topicId = topic;
-        this.getAllTopicReplies(this.topicId)
       }
       if(pageNum){
-        this.pageNum = pageNum;
+        this.topicPageNum = pageNum;
       }
+      if(repliesPageNum){
+        this.postPageNum = repliesPageNum;
+      }
+      this.getAllTopicReplies(this.topicId, this.postPageNum)
     })
     this.userId = this.userService.getUserId()
   }
   currentReplies: ForumReply[] = [];
-
-  showTopic(topic: ForumTopic){
-    this.router.navigate(['about']);
-    this.getAllTopicReplies(topic.id)
-  }
+  REPLIES_PER_SITE: number = 20;
 
   createAnswer(answerType: string, referrencedReply?: ForumReply){
     var purpose: EditorPurposeData = { type: EditorPurposeTypes.newReply};
@@ -97,7 +100,7 @@ export class ForumTopicComponent implements OnInit {
   }
 
   navigateBackToTopics(){
-    this.router.navigate(['forum/' + this.pageNum]);
+    this.router.navigate(['forum/' + this.topicPageNum]);
   }
 
   getUpVoteText(upvotes: number){
@@ -112,16 +115,30 @@ export class ForumTopicComponent implements OnInit {
     var txt = document.createElement("textarea");
     txt.innerHTML = html;
     return txt.value;
-   }
+  }
+
+  setPostsPageAmount(totalTopicAmout: number){ //Set Array of page numbers; to be looped in template
+    this.postPageIterationNumbers = []
+    for(var i = 1; i <= Math.ceil(totalTopicAmout / this.REPLIES_PER_SITE); i++){
+      this.postPageIterationNumbers.push(i);
+    }
+  }
+
+  goToPostPage(pageNum: number){
+    this.postPageNum = pageNum;
+    this.router.navigateByUrl('/', {skipLocationChange: true}).then(()=>
+    this.router.navigate(['forum/' + this.topicPageNum + '/topic/' + this.topicId + '/' + this.postPageNum]));
+  }
 
   /* Service Communication Functions */
 
-  getAllTopicReplies(topicId: string){
+  getAllTopicReplies(topicId: string, postPageNumber: number){
     this.loadingPosts = true;
-    this.forumService.getAllTopicReplies(topicId).subscribe((res: {}) => {
-      var resContainer = <ForumReplyResultsContainer>res;
-      this.currentReplies = resContainer.items;
+    this.forumService.getAllTopicReplies(topicId, postPageNumber).subscribe((res: {}) => {
+      this.loadedReplyObj = <ForumReplyResultsContainer>res;
+      this.currentReplies = this.loadedReplyObj.items;
       this.loadingPosts = false
+      this.setPostsPageAmount(this.loadedReplyObj.totalCount);
     }, (error: any) => {
       this.loadingPosts = false
       //...
@@ -131,7 +148,7 @@ export class ForumTopicComponent implements OnInit {
 
   submitNewReply(reply: ForumCreatorInput){
     this.forumService.setNewReply(this.topicId, reply).subscribe((res: {}) => {
-      this.getAllTopicReplies(this.topicId)
+      this.goToPostPage(Math.ceil((this.loadedReplyObj.totalCount + 1) / this.REPLIES_PER_SITE))
     }, (error: any) => {
       //...
       }
@@ -140,7 +157,7 @@ export class ForumTopicComponent implements OnInit {
 
   submitEdit(reply: ForumCreatorInput, post: ForumReply){
     this.forumService.editReply(reply, this.topicId, post.id).subscribe((res: {}) => {
-      this.getAllTopicReplies(this.topicId)
+      this.getAllTopicReplies(this.topicId, this.postPageNum)
     }, (error: any) => {
       //...
       }
@@ -149,7 +166,7 @@ export class ForumTopicComponent implements OnInit {
 
   deleteReply(post: ForumReply){
     this.forumService.deleteReply(this.topicId, post.id).subscribe((res: {}) => {
-      this.getAllTopicReplies(this.topicId)
+      this.getAllTopicReplies(this.topicId, this.postPageNum)
     }, (error: any) => {
       //...
       }
@@ -158,7 +175,7 @@ export class ForumTopicComponent implements OnInit {
 
   upVote(post: ForumReply){
     this.forumService.upVote(this.topicId, post.id).subscribe((res: {}) => {
-      this.getAllTopicReplies(this.topicId)
+      this.getAllTopicReplies(this.topicId, this.postPageNum)
     }, (error: any) => {
       //...
       }
@@ -167,7 +184,7 @@ export class ForumTopicComponent implements OnInit {
 
   downVote(post: ForumReply){
     this.forumService.downVote(this.topicId, post.id).subscribe((res: {}) => {
-      this.getAllTopicReplies(this.topicId)
+      this.getAllTopicReplies(this.topicId, this.postPageNum)
     }, (error: any) => {
       //...
       }
@@ -176,7 +193,7 @@ export class ForumTopicComponent implements OnInit {
 
   removeVote(post: ForumReply){
     this.forumService.removeVote(this.topicId, post.id).subscribe((res: {}) => {
-      this.getAllTopicReplies(this.topicId)
+      this.getAllTopicReplies(this.topicId, this.postPageNum)
     }, (error: any) => {
       //...
       }

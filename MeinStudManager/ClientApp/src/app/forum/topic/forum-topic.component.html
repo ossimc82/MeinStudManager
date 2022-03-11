@@ -2,7 +2,7 @@
 <div class="topicSiteContainer">
   <h1>Mein Studplaner - Forum</h1>
 
-  <h1 *ngIf="!loadingPosts">{{currentReplies.length}}
+  <h1 *ngIf="!loadingPosts">Seite {{postPageNum}} - zeige {{currentReplies.length}} von {{loadedReplyObj.totalCount}}
     <ng-container *ngIf="currentReplies.length == 1">Post</ng-container>
     <ng-container  *ngIf="currentReplies.length != 1">Posts</ng-container>
   </h1>
@@ -46,4 +46,12 @@
   <div class="answerContainer">
     <button class="answer-btn" mat-raised-button (click)="createAnswer('new')">Antwort schreiben</button>
   </div>
+
+  <div class="postsPage-container" *ngIf="!loadingPosts">
+    Seite<br>
+    <div class="postPage-clickables-container" *ngFor="let number of postPageIterationNumbers" (click)="goToPostPage(number)">
+      {{number}}
+    </div>
+  </div>
+
 </div>

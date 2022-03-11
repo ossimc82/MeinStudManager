@@ -94,3 +94,19 @@
 .answer-btn:hover{
   background-color: #5E7AC9
 }
+
+
+.postsPage-container{
+  display: block;
+  text-align: center;
+}
+.postPage-clickables-container{
+  display: inline-block;
+  padding-right: 5px;
+  color: blue;
+  text-decoration: underline;
+}
+.postPage-clickables-container:hover{
+  color: magenta;
+  cursor:pointer;
+}

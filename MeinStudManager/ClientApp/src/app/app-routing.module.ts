@@ -31,6 +31,7 @@ const appRoutes: Routes = [
   { path: 'forum', component: ForumComponent },
   { path: 'forum/:pageNum', component: ForumComponent },
   { path: 'forum/:pageNum/topic/:topicId', component: ForumTopicComponent },
+  { path: 'forum/:pageNum/topic/:topicId/:replyPageNum', component: ForumTopicComponent },
   {path: '**', redirectTo: '/home'}
 ]
 
