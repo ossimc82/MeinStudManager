@@ -6,6 +6,72 @@
         <h3 class="text-center">Bachelorstudium Informatik 2013</h3>
       </div>
 
+
+      <div *ngIf="changeGradeVisible" class="mb-4 row justify-content-center">
+        <div class="col-md-10">
+          <form [formGroup]="changeGradeForm"  class="custom-border">
+            <div class="row mb-3">
+              <label for="subject" class="col-sm-6 col-form-label">Fach</label>
+              <div class="col-sm-6">
+                {{subjectName}}
+              </div>
+            </div>
+
+            <div class="row mb-3" >
+              <label for="grade" class="col-sm-6 col-form-label">Note</label>
+              <div class="col-sm-6">
+                <input
+                  type="text"
+                  formControlName="grade"
+                  class="form-control"
+                  id="grade"
+                  >
+                  <span
+                  *ngIf="!changeGradeForm.get('grade')?.valid && changeGradeForm.get('grade')?.touched"
+                  class="help-block">Bitte gib eine Note zwichen 1 und 5 ein</span>
+              </div>
+            </div>
+
+            <div class="row mb-3" >
+              <label for="creditPoints" class="col-sm-6 col-form-label">CP</label>
+              <div class="col-sm-6">
+                {{subjectCP}}
+              </div>
+            </div>
+
+            <div class="form-group row mb-3" >
+              <div class="col-sm-6">Studienabschnitt</div>
+              <div class="col-sm-6 " >
+                  {{subjectSection}}
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-6">
+                <button *ngIf="!editMode" (click)="onChangeGrade(true)"  class="btn btn-primary">Note ändern</button>
+                <button *ngIf="editMode" [disabled]="!changeGradeForm.valid" (click)="onChangeGrade(false)"  class="btn btn-primary">Neue Note Speichern</button>
+              </div>
+              <div class="col-6 text-end">
+                <button (click)="onDeleteGrade()"   class="btn btn-primary">Note löschen</button>
+              </div>
+            </div>
+            <hr>
+
+            <div class="row">
+              <span *ngIf="errorPRchangeGrade" class="text-danger text-center m-3">
+                Fehler: Note muss eine Zahl von 1 - 5
+              </span>
+            </div>
+
+            <div class="row">
+              <div class="col text-center">
+                <button (click)="onAbortEdit()" class="btn btn-secondary">Abbrechen</button>
+              </div>
+
+            </div>
+          </form>
+        </div>
+      </div>
+
       <div class="row  custom-border-up">
         <div class="col-6 fw-bold">1. Studienabschnit</div>
         <div class="col-6 text-end "
@@ -94,7 +160,7 @@
           <div *ngFor="let subject of subjectsSectionOptional">
             <div class="row  custom-border-up no-padding">
               <div class="col-8 align-self-center">
-                <a  (click)="onEditSubject(subject, 'Wahlpflichtfächer')">{{subject.name}}</a>
+                <a  (click)="onEditSubject(subject, 'Wahlpflichtfach')">{{subject.name}}</a>
               </div>
               <div class="col-2 custom-border-left">
                 {{subject.grade}}
@@ -106,13 +172,21 @@
           </div>
         </ng-template>
 
+
+
         <div class="m-3 row">
           <div class="column text-center">
-            <button class="btn btn-primary" (click)="setChangeGradesVisible()">
+            <button class="btn btn-primary" (click)="setAddGradesVisible()">
               <span *ngIf="addGradesVisible">Abbrechen</span>
               <span *ngIf="addGradesVisible===false">Note hinzufügen</span>
             </button>
           </div>
+        </div>
+
+        <div class="row">
+          <span *ngIf="errorPR" class="text-danger text-center m-3">
+            Oops... Something went wrong!
+          </span>
         </div>
 
         <div *ngIf="addGradesVisible" class="mb-4 row justify-content-center">
@@ -128,7 +202,7 @@
                     id="subject">
                     <span
                     *ngIf="!gradesForm.get('subject')?.valid && gradesForm.get('subject')?.touched"
-                    class="help-block">Bitte gib ein Fach ein</span>
+                    class="help-block">Mindestlänge 5 Zeichen</span>
                 </div>
               </div>
 
@@ -155,7 +229,7 @@
                     id="creditPoints">
                     <span
                     *ngIf="!gradesForm.get('creditPoints')?.valid && gradesForm.get('creditPoints')?.touched"
-                    class="help-block">Bitte gib die CP an</span>
+                    class="help-block">Bitte gib eine ganze Zahl ein</span>
                 </div>
               </div>
 
@@ -163,9 +237,9 @@
                 <label for="studySection" class="col-sm-6 col-form-label">Studienabschnitt</label>
                 <div class="col-sm-6 " >
                     <select formControlName="studySection" class="form-select" id="studySection">
-                      <option value="subjectsSectionOne">1. Studienabschnitt</option>
-                      <option value="subjectsSectionTwo">2. Studienabschnitt</option>
-                      <option value="subjectsSectionOptional">Wahlpflichtfach</option>
+                      <option value="1. Studienabschnitt">1. Studienabschnitt</option>
+                      <option value="2. Studienabschnitt">2. Studienabschnitt</option>
+                      <option value="Wahlpflichtfach">Wahlpflichtfach</option>
                     </select>
                 </div>
               </div>
@@ -180,63 +254,6 @@
         </div>
 
 
-        <div *ngIf="changeGradeVisible" class="mb-4 row justify-content-center">
-          <div class="col-md-10">
-            <form [formGroup]="changeGradeForm"  class="custom-border">
-              <div class="row mb-3">
-                <label for="subject" class="col-sm-6 col-form-label">Fach</label>
-                <div class="col-sm-6">
-                  {{subjectName}}
-                </div>
-              </div>
-
-              <div class="row mb-3" >
-                <label for="grade" class="col-sm-6 col-form-label">Note</label>
-                <div class="col-sm-6">
-                  <input
-                    type="text"
-                    formControlName="grade"
-                    class="form-control"
-                    id="grade"
-                    >
-                    <span
-                    *ngIf="!gradesForm.get('grade')?.valid && gradesForm.get('grade')?.touched"
-                    class="help-block">Bitte gib eine Note ein</span>
-                </div>
-              </div>
-
-              <div class="row mb-3" >
-                <label for="creditPoints" class="col-sm-6 col-form-label">CP</label>
-                <div class="col-sm-6">
-                  {{subjectCP}}
-                </div>
-              </div>
-
-              <div class="form-group row mb-3" >
-                <div class="col-sm-6">Studienabschnitt</div>
-                <div class="col-sm-6 " >
-                    {{subjectSection}}
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-6">
-                  <button *ngIf="!editMode" (click)="onChangeGrade(true)"  class="btn btn-primary">Note ändern</button>
-                  <button *ngIf="editMode" (click)="onChangeGrade(false)"  class="btn btn-primary">Neue Note Speichern</button>
-                </div>
-                <div class="col-6 text-end">
-                  <button (click)="onDeleteGrade()"   class="btn btn-primary">Note löschen</button>
-                </div>
-              </div>
-              <hr>
-              <div class="row">
-                <div class="col text-center">
-                  <button (click)="onAbortEdit()" class="btn btn-secondary">Abbrechen</button>
-                </div>
-
-              </div>
-            </form>
-          </div>
-        </div>
 
   </div>
 </div>

@@ -1,28 +1,8 @@
 import { HttpClient } from "@angular/common/http";
 import { Inject, Injectable } from "@angular/core";
-import { pipe, Subject } from "rxjs";
-import { map, tap } from "rxjs/operators";
+import { map } from "rxjs/operators";
+import { resGradesData, UniSubjectReq } from "./uni-subject.model";
 
-export interface resSubject {
-  name : string;
-  grade: number;
-  credits: number;
-}
-export  interface resSubjects {
-  name : string;
-  subjects : resSubject[];
-}
-export interface resGradesData {
-  studySections: resSubjects[];
-}
-
-export class UniSubject {
-  constructor(
-    public name: string,
-    public grade: number,
-    public cp: number
-  ) {}
-}
 
 @Injectable({
   providedIn:'root'
@@ -35,13 +15,31 @@ export class PerformanceRecordService {
 
       getGrades()  {
        return this.http.get<resGradesData>(
-         this.baseUrl + 'api/Grade/list').pipe(
+         this.baseUrl + 'api/Grade').pipe(
            map(
              res =>  {
+               console.log(res);
                return res.studySections;
              }
            )
          );
       }
+
+      postGrade(grade : UniSubjectReq)  {
+        return this.http.post(
+          this.baseUrl + 'api/Grade', grade);
+       }
+
+      putGrade(grade : UniSubjectReq)  {
+        return this.http.put(
+          this.baseUrl + 'api/Grade', grade);
+       }
+
+       deleteGrade(grade : UniSubjectReq)  {
+        return this.http.post(
+          this.baseUrl + 'api/Grade/delete', grade);
+       }
+
+
 }
 
