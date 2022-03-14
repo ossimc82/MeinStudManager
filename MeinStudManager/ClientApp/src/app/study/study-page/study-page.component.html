@@ -14,6 +14,7 @@
     "col-sm-6 text-center
     border-start
     border-end
+    border-bottom
     border-dark
     border-2">
 
@@ -26,7 +27,7 @@
 
      <ng-container *ngIf="method.name === 'Leitner-Algorithmus'">
       <img src="https://magazin.sofatutor.com/schueler/wp-content/uploads/sites/4/2014/02/leitner4.jpg"
-      alt="Leitner-Algorithmus" class="img-fluid mt-3" >
+        alt="Leitner-Algorithmus" class="img-fluid mt-3" >
       <div class="row custom-font border-top mt-2">quelle: https://magazin.sofatutor.com/schueler/wp-content/uploads/sites/4/2014/02/leitner4.jpg</div>
      </ng-container>
 
@@ -35,6 +36,12 @@
      </ng-container>
      <ng-container *ngIf="method.name ==='First-Brick Methode'">
       <app-todo-list [methodName]="method.name"></app-todo-list>
+     </ng-container>
+
+     <ng-container *ngIf="method.name === 'Weitere Tipps'">
+      <img src='../../../assets/images/study.jpg'
+        alt="Weitere Tipps" class="img-fluid mt-3" >
+      <div class="row custom-font border-top mt-2">quelle: https://unsplash.com/photos/QJDzYT_K8Xg</div>
      </ng-container>
 
 
