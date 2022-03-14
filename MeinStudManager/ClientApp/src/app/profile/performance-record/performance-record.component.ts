@@ -138,21 +138,18 @@ export class PerformanceRecordComponent implements OnInit, OnDestroy, DoCheck {
     this.gradesForm = new FormGroup(
       {
         'subject' : new FormControl(null, [Validators.required, Validators.minLength(5)]),
-        //////////////////////
-        'grade' : new FormControl(null, [Validators.required,Validators.pattern(/[+]?([1-4]*[\,\.]{1}[0-9]+|[0-5])/), Validators.maxLength(3)]),
-        ////////////
-        'creditPoints' : new FormControl(null ,[Validators.required, Validators.pattern(/^-?(0|[1-9]\d*)?$/), Validators.maxLength(1)]),
+        'grade' : new FormControl(null, [Validators.required,Validators.pattern(/[+]?([1-5]*[\,\.]{1}[0-9]+|[0-5])/), Validators.maxLength(3)]),
+        'creditPoints' : new FormControl(null ,[Validators.required, Validators.pattern(/^-?(0|[3-9]\d*)?$/), Validators.maxLength(1)]),
         'studySection' : new FormControl("1. Studienabschnitt", Validators.required)
       }
     );
     this.changeGradeForm = new FormGroup({
-      'grade' : new FormControl({value: '', disabled: true}, [Validators.required,Validators.pattern(/[+]?([1-4]*[\,\.]{1}[0-9]+|[0-5])/), Validators.maxLength(3)])
+      'grade' : new FormControl({value: '', disabled: true}, [Validators.required,Validators.pattern(/[+]?([1-5]*[\,\.]{1}[0-9]+|[0-5])/), Validators.maxLength(3)])
     })
 
   }
 
   submitGrade() {
-    console.log(this.gradesForm.value);
 
     this.subjectService.postGrade(new UniSubjectReq(
       this.gradesForm.get('studySection').value,
@@ -183,7 +180,7 @@ export class PerformanceRecordComponent implements OnInit, OnDestroy, DoCheck {
     this.subjectCP = subject.cp.toString();
     this.subjectSection = studySection;
     this.changeGradeForm.patchValue({
-      'grade' :  subject.grade
+      'grade' :  subject.grade.toString()
     });
 
   }
@@ -192,34 +189,39 @@ export class PerformanceRecordComponent implements OnInit, OnDestroy, DoCheck {
     this.changeGradeVisible = false;
   }
 
-  onChangeGrade(value : boolean) {
-    this.editMode = value;
-    if (this.editMode) {
-      this.changeGradeForm.get('grade').enable();
-    } else {
-      this.subjectGrade = this.changeGradeForm.get('grade').value.replaceAll(',', '.');
 
-      this.changeGradeForm.get('grade').disable();
-      this.subjectService.putGrade(new UniSubjectReq(
-        this.subjectSection,
-        this.subjectName,
-        +this.subjectGrade,
-        +this.subjectCP
-      )).subscribe(
-        res => {
-          console.log('erforlreich neue Note updated');
-          this.resetGrades();
-          this.getGrades();
-          this.changeGradeVisible = false;
-          this.errorPRchangeGrade = false;
-        },
-        errorRes => {
-          this.errorPRchangeGrade = true;
-          console.log('Fehler beim updaten');
-        }
-      );
+  onChangeGrade() {
+    this.editMode = true;
+    this.changeGradeForm.get('grade').enable();
+    console.log(this.changeGradeForm.get('grade').value);
+  }
+
+  onSaveChangedGrade() {
+
+    console.log(this.changeGradeForm.get('grade').value);
+
+    this.editMode = false;
+
+    this.subjectGrade = this.changeGradeForm.get('grade').value.replaceAll(',', '.');
+    this.changeGradeForm.get('grade').disable();
+    this.subjectService.putGrade(new UniSubjectReq(
+    this.subjectSection,
+    this.subjectName,
+    +(this.subjectGrade),
+    +this.subjectCP
+  )).subscribe(
+    res => {
+      console.log('erforlreich neue Note updated');
+      this.resetGrades();
+      this.getGrades();
+      this.changeGradeVisible = false;
+      this.errorPRchangeGrade = false;
+    },
+    errorRes => {
+      this.errorPRchangeGrade = true;
+      console.log('Fehler beim updaten');
     }
-
+  );
   }
 
   onDeleteGrade() {

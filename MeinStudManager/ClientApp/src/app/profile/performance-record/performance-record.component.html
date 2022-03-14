@@ -47,8 +47,8 @@
             </div>
             <div class="row">
               <div class="col-6">
-                <button *ngIf="!editMode" (click)="onChangeGrade(true)"  class="btn btn-primary">Note ändern</button>
-                <button *ngIf="editMode" [disabled]="!changeGradeForm.valid" (click)="onChangeGrade(false)"  class="btn btn-primary">Neue Note Speichern</button>
+                <button *ngIf="!editMode" (click)="onChangeGrade()"  class="btn btn-primary">Note ändern</button>
+                <button *ngIf="editMode" [disabled]="!changeGradeForm.valid" (click)="onSaveChangedGrade()"  class="btn btn-primary">Neue Note Speichern</button>
               </div>
               <div class="col-6 text-end">
                 <button (click)="onDeleteGrade()"   class="btn btn-primary">Note löschen</button>
