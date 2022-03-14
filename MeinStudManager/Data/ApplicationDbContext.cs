@@ -1,12 +1,15 @@
 ﻿using MeinStudManager.Models;
 using MeinStudManager.Models.Forum;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace MeinStudManager.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string,
+        IdentityUserClaim<string>, ApplicationUserRole, IdentityUserLogin<string>,
+        IdentityRoleClaim<string>, IdentityUserToken<string>>
     {
         public ApplicationDbContext(DbContextOptions options)
             : base(options)
@@ -23,9 +26,44 @@ namespace MeinStudManager.Data
         {
             base.OnModelCreating(builder);
 
+            CreateUserModel(builder);
             CreateTimetableModel(builder);
             CreateForumModel(builder);
             CreateGradesModel(builder);
+        }
+
+        private void CreateUserModel(ModelBuilder builder)
+        {
+            builder.Entity<ApplicationUser>(b =>
+            {
+                b.HasMany(e => e.Claims)
+                    .WithOne()
+                    .HasForeignKey(uc => uc.UserId)
+                    .IsRequired();
+                
+                b.HasMany(e => e.Logins)
+                    .WithOne()
+                    .HasForeignKey(ul => ul.UserId)
+                    .IsRequired();
+                
+                b.HasMany(e => e.Tokens)
+                    .WithOne()
+                    .HasForeignKey(ut => ut.UserId)
+                    .IsRequired();
+                
+                b.HasMany(e => e.UserRoles)
+                    .WithOne(e => e.User)
+                    .HasForeignKey(ur => ur.UserId)
+                    .IsRequired();
+            });
+
+            builder.Entity<ApplicationRole>(b =>
+            {
+                b.HasMany(e => e.UserRoles)
+                    .WithOne(e => e.Role)
+                    .HasForeignKey(ur => ur.RoleId)
+                    .IsRequired();
+            });
         }
 
         private void CreateTimetableModel(ModelBuilder builder)
@@ -92,14 +130,10 @@ namespace MeinStudManager.Data
         private void CreateGradesModel(ModelBuilder builder)
         {
             builder.Entity<GradeEntry>()
-                .HasKey(ge => new { ge.UserId, ge.StudySection, ge.Subject });
+                .HasKey(ge => new { ge.UserId, ge.Subject });
 
             builder.Entity<GradeEntry>()
                 .HasIndex(ge => ge.UserId)
-                .IsUnique(false);
-
-            builder.Entity<GradeEntry>()
-                .HasIndex(ge => ge.StudySection)
                 .IsUnique(false);
 
             builder.Entity<GradeEntry>()

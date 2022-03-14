@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SignInResult = Microsoft.AspNetCore.Mvc.SignInResult;
 
 namespace MeinStudManager.Controllers
@@ -28,9 +29,11 @@ namespace MeinStudManager.Controllers
         }
 
         [NonAction]
-        public Task<ApplicationUser> GetUser()
+        public async Task<ApplicationUser> GetUser()
         {
-            return UserManager.FindByIdentity(User.Identity);
+            return await UserManager.Users.Where(_ => _.Id == User.Identity.Name)
+                .Include(_ => _.UserRoles)
+                .ThenInclude(_ => _.Role).FirstAsync();
         }
 
         [NonAction]

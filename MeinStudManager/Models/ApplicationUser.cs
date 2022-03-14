@@ -50,5 +50,27 @@ namespace MeinStudManager.Models
         public List<ForumVote> ForumVotes { get; set; }
         [JsonIgnore]
         public List<GradeEntry> Grades { get; set; }
+        [JsonIgnore]
+        public List<IdentityUserClaim<string>> Claims { get; set; }
+        [JsonIgnore]
+        public List<IdentityUserLogin<string>> Logins { get; set; }
+        [JsonIgnore]
+        public List<IdentityUserToken<string>> Tokens { get; set; }
+        [JsonIgnore]
+        public List<ApplicationUserRole> UserRoles { get; set; }
+
+        public bool IsModOrAdmin => UserRoles?.Any(_ =>
+            _.Role.NormalizedName is "MODERATORS" or "ADMINS") ?? false;
+    }
+
+    public class ApplicationRole : IdentityRole
+    {
+        public List<ApplicationUserRole> UserRoles { get; set; }
+    }
+
+    public class ApplicationUserRole : IdentityUserRole<string>
+    {
+        public ApplicationUser User { get; set; }
+        public ApplicationRole Role { get; set; }
     }
 }

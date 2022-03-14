@@ -3,6 +3,7 @@ using System;
 using MeinStudManager.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MeinStudManager.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220314150930_FixGradesPrimaryKey")]
+    partial class FixGradesPrimaryKey
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -41,7 +43,7 @@ namespace MeinStudManager.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ForumVotes", (string)null);
+                    b.ToTable("ForumVotes");
                 });
 
             modelBuilder.Entity("MeinStudManager.Data.GradeEntry", b =>
@@ -68,7 +70,7 @@ namespace MeinStudManager.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Grades", (string)null);
+                    b.ToTable("Grades");
                 });
 
             modelBuilder.Entity("MeinStudManager.Data.TimetableEntry", b =>
@@ -131,7 +133,7 @@ namespace MeinStudManager.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Timetables", (string)null);
+                    b.ToTable("Timetables");
                 });
 
             modelBuilder.Entity("MeinStudManager.Models.ApplicationUser", b =>
@@ -247,7 +249,7 @@ namespace MeinStudManager.Migrations
 
                     b.HasIndex("TopicId");
 
-                    b.ToTable("ForumReplies", (string)null);
+                    b.ToTable("ForumReplies");
                 });
 
             modelBuilder.Entity("MeinStudManager.Models.Forum.ForumTopic", b =>
@@ -258,7 +260,7 @@ namespace MeinStudManager.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ForumTopics", (string)null);
+                    b.ToTable("ForumTopics");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

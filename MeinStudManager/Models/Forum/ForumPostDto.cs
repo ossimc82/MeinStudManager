@@ -14,5 +14,7 @@ namespace MeinStudManager.Models.Forum
         [MinLength(3)]
         [Required]
         public string Content { get; set; }
+
+        public bool Anonymous { get; set; } = false;
     }
 }

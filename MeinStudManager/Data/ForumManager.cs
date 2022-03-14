@@ -1,4 +1,5 @@
-﻿using System.Web;
+﻿using System.IO.Pipes;
+using System.Web;
 using MeinStudManager.Extensions;
 using MeinStudManager.Models;
 using MeinStudManager.Models.Forum;
@@ -17,15 +18,17 @@ namespace MeinStudManager.Data
             this.db = db;
         }
 
-        public PagingResult<ForumReply> GetReplies(Guid topic, int count, int page)
+        public PagingResult<ForumReply> GetReplies(Guid topic, int count, int page, ApplicationUser user)
         {
             return PagingResult<ForumReply>.CreatePagingResult(
                 db.ForumReplies.Where(_ => _.TopicId == topic).OrderBy(_ => _.CreationDate)
                     .Include(_ => _.Author)
+                    .ThenInclude(u => u.UserRoles)
+                    .ThenInclude(r => r.Role)
                     .Include(_ => _.Votes), count, page);
         }
 
-        public async Task<IActionResult> NewTopic(ApplicationUser user, string title, string content)
+        public async Task<IActionResult> NewTopic(ApplicationUser user, string title, string content, bool anonymous)
         {
             title = HttpUtility.HtmlEncode(title);
             content = HttpUtility.HtmlEncode(content);
@@ -42,7 +45,8 @@ namespace MeinStudManager.Data
                 Author = user,
                 CreationDate = DateTime.UtcNow,
                 Title = title,
-                Content = content
+                Content = content,
+                AnonymousPost = anonymous
             };
 
             db.ForumReplies.Add(reply);
@@ -53,12 +57,12 @@ namespace MeinStudManager.Data
             return new OkObjectResult(topic.Entity.Replies[0].Id);
         }
 
-        public PagingResult<ForumTopic> GetTopics(int count, int page)
+        public PagingResult<ForumTopic> GetTopics(int count, int page, ApplicationUser user)
         {
             return PagingResult<ForumTopic>.CreatePagingResult(db.ForumTopics.Include(t => t.Replies).AsEnumerable().OrderBy(_ => _.LastReply), count, page);
         }
 
-        public async Task<string?> NewReply(Guid topicId, ApplicationUser user, string title, string content)
+        public async Task<string?> NewReply(Guid topicId, ApplicationUser user, string title, string content, bool anonymous)
         {
             var topic = await db.ForumTopics.FindAsync(topicId);
             if (topic == null)
@@ -74,7 +78,8 @@ namespace MeinStudManager.Data
                 Author = user,
                 CreationDate = DateTime.UtcNow,
                 Title = HttpUtility.HtmlEncode(title),
-                Content = HttpUtility.HtmlEncode(content)
+                Content = HttpUtility.HtmlEncode(content),
+                AnonymousPost = anonymous
             };
 
             db.ForumReplies.Add(reply);
@@ -85,7 +90,7 @@ namespace MeinStudManager.Data
             return null;
         }
 
-        public async Task<string?> EditReply(Guid topicId, Guid postId, ApplicationUser user, string title, string content)
+        public async Task<string?> EditReply(Guid topicId, Guid postId, ApplicationUser user, string title, string content, bool anonymous)
         {
             title = HttpUtility.HtmlEncode(title);
             content = HttpUtility.HtmlEncode(content);
@@ -100,11 +105,12 @@ namespace MeinStudManager.Data
 
             var replyEn = db.Entry(reply);
 
-            if (reply.Title == title && reply.Content == content)
+            if (reply.Title == title && reply.Content == content && reply.AnonymousPost == anonymous)
                 return null;
 
             replyEn.Entity.Title = title;
             replyEn.Entity.Content = content;
+            replyEn.Entity.AnonymousPost = anonymous;
 
             replyEn.Entity.LastEdit = DateTime.UtcNow;
             replyEn.Entity.NumberOfEdits++;
@@ -118,6 +124,9 @@ namespace MeinStudManager.Data
             var reply = await db.ForumReplies.FirstOrDefaultAsync(_ => _.Id == postId && _.TopicId == topicId);
             if (reply == null)
                 return $"Reply with id {postId} in topic with id {topicId} not found!";
+            
+            if (!reply.CanBeDeleted && !user.IsModOrAdmin)
+                return "Deletion time expired or your reply is not the last anymore. (Maybe mark as anonymous)";
 
             var replyEn = db.Remove(reply);
 
