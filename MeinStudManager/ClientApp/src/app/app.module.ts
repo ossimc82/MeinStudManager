@@ -21,6 +21,8 @@ import { PlannerService } from './planner/planner/planner.service';
 import { StudyComponent } from './study/study.component';
 import { ForumComponent } from './forum/forum.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MdbModalModule } from 'mdb-angular-ui-kit/modal';
+
 
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -29,6 +31,13 @@ import { ForumTopicComponent } from './forum/topic/forum-topic.component';
 import { ForumCustomDialog } from './forum/topic/customDialog/customDialog-component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ForumPostCreatorModule } from './forum/editor/post-creator.module';
+import { MethodComponent } from './study/study-page/method/method.component';
+import { TimerComponent } from './study/study-page/timer/timer.component';
+import { StopwatchComponent } from './study/study-page/stopwatch/stopwatch.component';
+import { MethodDetailsComponent } from './study/study-page/method-details/method-details.component';
+import { StudyPageComponent } from './study/study-page/study-page.component';
+import { ModalComponent } from './study/study-page/timer/modal/modal.component';
+import { TodoListComponent } from './study/study-page/todo-list/todo-list.component';
 
 @NgModule({
   declarations: [
@@ -46,7 +55,14 @@ import { ForumPostCreatorModule } from './forum/editor/post-creator.module';
     StudyComponent,
     ForumComponent,
     ForumCustomDialog,
-    ForumTopicComponent
+    ForumTopicComponent,
+    MethodComponent,
+    TimerComponent,
+    StopwatchComponent,
+    MethodDetailsComponent,
+    StudyPageComponent,
+    ModalComponent,
+    TodoListComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -59,7 +75,8 @@ import { ForumPostCreatorModule } from './forum/editor/post-creator.module';
     MatDialogModule,
     MatButtonModule,
     MatProgressSpinnerModule,
-    ForumPostCreatorModule
+    ForumPostCreatorModule,
+    MdbModalModule
   ],
   providers: [{provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true},
     PlannerService,

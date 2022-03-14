@@ -158,7 +158,6 @@ export class PerformanceRecordComponent implements OnInit, OnDestroy, DoCheck {
       this.gradesForm.get('creditPoints').value,
     )).subscribe(
       res => {
-        console.log('erforlreich neue Note gespeichert');
         this.resetGrades();
         this.getGrades();
         this.addGradesVisible= false;
@@ -166,7 +165,6 @@ export class PerformanceRecordComponent implements OnInit, OnDestroy, DoCheck {
       },
       errorRes => {
         this.errorPR = true;
-        console.log('Fehler beim speichern: ' + errorRes);
       }
     );
 
@@ -193,12 +191,10 @@ export class PerformanceRecordComponent implements OnInit, OnDestroy, DoCheck {
   onChangeGrade() {
     this.editMode = true;
     this.changeGradeForm.get('grade').enable();
-    console.log(this.changeGradeForm.get('grade').value);
+
   }
 
   onSaveChangedGrade() {
-
-    console.log(this.changeGradeForm.get('grade').value);
 
     this.editMode = false;
 
@@ -211,7 +207,6 @@ export class PerformanceRecordComponent implements OnInit, OnDestroy, DoCheck {
     +this.subjectCP
   )).subscribe(
     res => {
-      console.log('erforlreich neue Note updated');
       this.resetGrades();
       this.getGrades();
       this.changeGradeVisible = false;
@@ -219,28 +214,24 @@ export class PerformanceRecordComponent implements OnInit, OnDestroy, DoCheck {
     },
     errorRes => {
       this.errorPRchangeGrade = true;
-      console.log('Fehler beim updaten');
     }
   );
   }
 
   onDeleteGrade() {
-    console.log(this.subjectName);
-
     this.subjectService.deleteGrade(new UniSubjectReq(
       this.subjectSection,
       this.subjectName,
       +this.subjectGrade,
       +this.subjectCP,
     )).subscribe( res => {
-      console.log('erforlreich  Note gelöscht');
+
       this.resetGrades();
       this.getGrades();
       this.errorPR = false;
     },
     errorRes => {
       this.errorPR = true;
-      console.log('Fehler beim löschen ' + errorRes);
     });
     this.showSubjectsSectionOne= false;
     this.showSubjectsSectionTwo= false;

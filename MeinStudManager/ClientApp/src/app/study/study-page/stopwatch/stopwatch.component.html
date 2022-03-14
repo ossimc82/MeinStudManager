@@ -1,0 +1,12 @@
+<div class="container p-3">
+  <h1>Stoppuhr</h1>
+  <h1 class="fs-1">
+    {{value[0] < 10 ? 0 : ''}}{{value[0]}}:{{value[1] < 10 ? 0 : ''}}{{value[1]}}
+  </h1>
+  <div>
+    <button type="button" class="btn btn-success m-1" (click)="startTimer()">Start</button>
+    <button type="button" class="btn btn-danger m-1" (click)="stopTimer()">Stop</button>
+    <button type="button" class="btn btn-secondary m-1" (click)="resetTimer()">Reset</button>
+  </div>
+</div>
+

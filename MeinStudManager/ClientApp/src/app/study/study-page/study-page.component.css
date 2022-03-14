@@ -1,0 +1,13 @@
+.custom-border {
+  border-color: black;
+  border-style: none none solid none;
+
+}
+
+.background-color {
+  background-color: rgba(72, 94, 192, 0.774);
+}
+.custom-font {
+
+  font-style: italic;
+}

@@ -18,7 +18,6 @@ export class PerformanceRecordService {
          this.baseUrl + 'api/Grade').pipe(
            map(
              res =>  {
-               console.log(res);
                return res.studySections;
              }
            )

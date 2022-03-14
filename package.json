@@ -1,5 +1,8 @@
 {
   "devDependencies": {
     "lodash": "^4.17.19"
+  },
+  "dependencies": {
+    "ngb-modal": "^2.0.3"
   }
 }

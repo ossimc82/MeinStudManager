@@ -57,7 +57,6 @@ export class ChangeProfileComponent implements OnInit  {
       this.changeProfileForm.get('phoneNumber').value,
       true  // hardcoded right now
     );
-    console.log(putUser);
      this.userService.putUser(putUser).subscribe(
        res => {
 

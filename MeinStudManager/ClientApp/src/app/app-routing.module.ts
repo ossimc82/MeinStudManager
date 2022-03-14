@@ -20,11 +20,11 @@ const appRoutes: Routes = [
   { path: 'home', component: HomeComponent, canActivate: [AuthGuard] },
   { path: 'profile', component: ProfileComponent,  canActivate: [AuthGuard], children:
     [
-    {path: 'settings', component: ChangeProfileComponent},
-    {path: 'notenspiegel', component: PerformanceRecordComponent}
+    {path: 'settings', component: ChangeProfileComponent,canActivate: [AuthGuard]},
+    {path: 'notenspiegel', component: PerformanceRecordComponent,canActivate: [AuthGuard]}
     ]
   },
-  { path: 'lernen', component: StudyComponent  },
+  { path: 'lernen', component: StudyComponent,canActivate: [AuthGuard] },
   { path: 'login', component: AuthComponent  },
   { path: 'register', component: RegisterComponent },
   { path: 'planner', component: PlannerComponent },

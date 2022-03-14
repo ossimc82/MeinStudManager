@@ -1,0 +1,21 @@
+<div class="main">
+  <h1>TODO</h1>
+    <div class="row mb-2">
+      <div class="col-sm-8">
+        <input  [(ngModel)] = "newTask" (keyup.enter)="pushTask()" type="text" placeholder="Aufgabe hinzufügen" class="form-control">
+      </div>
+      <div class="col-sm-4 text-end">
+        <button  (click) = "pushTask()"  class="btn btn-primary m-0">hinzufügen</button>
+      </div>
+    </div>
+
+  <ul class="list-group">
+    <li class="list-group-item text-start" *ngFor = "let task of tasks; let ind = index">{{task}}
+
+      <span class="float-end fs-3 border-start ps-3" (click) = "removeTask(ind)">&#10003;</span>
+    </li>
+  </ul>
+
+  <span style="font-size: x-small;">bitte beachten: Liste speichert nur solange man eingeloggt ist</span>
+
+</div>

@@ -1,0 +1,51 @@
+<ng-container *ngIf="user | async as user">
+  <div class="col-sm-12 text-center custom-border background-color">
+    <h2 class="pt-1 pb-1 mb-0">{{user.userName}}'s Lernecke </h2>
+  </div>
+</ng-container>
+<div class="row justify-content-center">
+  <div class="row">
+
+    <div class="col-sm-3 text-center">
+      <app-method-details [method] =method></app-method-details>
+    </div>
+
+    <div class=
+    "col-sm-6 text-center
+    border-start
+    border-end
+    border-dark
+    border-2">
+
+    <h2 class="mb-0" >{{method.name}}</h2>
+
+     <ng-container *ngIf="method.name === 'Pomodoro'">
+      <app-timer></app-timer>
+      <app-stopwatch></app-stopwatch>
+     </ng-container>
+
+     <ng-container *ngIf="method.name === 'Leitner-Algorithmus'">
+      <img src="https://magazin.sofatutor.com/schueler/wp-content/uploads/sites/4/2014/02/leitner4.jpg"
+      alt="Leitner-Algorithmus" class="img-fluid mt-3" >
+      <div class="row custom-font border-top mt-2">quelle: https://magazin.sofatutor.com/schueler/wp-content/uploads/sites/4/2014/02/leitner4.jpg</div>
+     </ng-container>
+
+     <ng-container *ngIf="method.name === 'Alpen-Methode'">
+      <app-todo-list [methodName]="method.name"></app-todo-list>
+     </ng-container>
+     <ng-container *ngIf="method.name ==='First-Brick Methode'">
+      <app-todo-list [methodName]="method.name"></app-todo-list>
+     </ng-container>
+
+
+    </div>
+
+    <div class="col-sm-3 text-center">
+      <app-method
+      *ngFor="let method of methods"
+      [method]="method"
+      (methodEvent)="getSelectedMethod($event)">
+      </app-method>
+    </div>
+  </div>
+</div>
