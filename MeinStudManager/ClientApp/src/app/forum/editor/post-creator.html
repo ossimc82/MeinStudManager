@@ -8,8 +8,12 @@
   <textarea class="postCreator-content-field" #contentArea [(ngModel)]="postData.content"></textarea>
 
   <div class="editor-bottom-row">
-    <button (click)="postDiscarded()">Abbrechen</button>
-    <button (click)="postSubmitted()">Senden</button>
+    <div><input type="checkbox" class="example-margin" [(ngModel)]="postData.anonymous"> Anonym posten</div>
+
+    <div>
+      <button (click)="postDiscarded()">Abbrechen</button>
+      <button (click)="postSubmitted()">Senden</button>
+    </div>
   </div>
 
 </div>

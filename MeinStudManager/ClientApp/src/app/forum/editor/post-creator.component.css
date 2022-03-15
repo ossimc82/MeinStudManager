@@ -6,8 +6,8 @@
 }
 
 .editor-bottom-row{
-  display: flexbox;
-  text-align: end;
+  display: flex;
+  justify-content: space-between
 }
 
 .postCreator-title-field{

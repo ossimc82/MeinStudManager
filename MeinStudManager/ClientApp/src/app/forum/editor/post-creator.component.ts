@@ -24,6 +24,7 @@ export class ForumPostCreator implements OnInit {
   headerText: string = "Neuen Beitrag Hizufügen"
 
   purposeData: EditorPurposeData = {type: EditorPurposeTypes.newTopic};
+  receivedAnonState: boolean;
 
   constructor(
     public dialog: MatDialog,
@@ -31,7 +32,13 @@ export class ForumPostCreator implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    console.log(this.purposeData)
+    if(this.purposeData.replyRef){
+      this.postData.anonymous = this.purposeData.replyRef.anonymousPost;
+    }
+    else{
+      this.postData.anonymous = false;
+    }
+    this.receivedAnonState = this.postData.anonymous;
     //initialize Purpose
     if(this.purposeData.type == EditorPurposeTypes.newReply){
       this.headerText = "Antwort schreiben"
@@ -84,7 +91,8 @@ export class ForumPostCreator implements OnInit {
       cantSubmit = true;
       reason = "Fehler: Nachricht zu lang. Max. " + this.MESSAGE_MAX_CHARACTERS + " Character sind erlaubt."
     }
-    else if(this.postData.title == this.purposeData.replyRef?.title && this.postData.content == this.purposeData.replyRef?.content){
+    else if(this.postData.title == this.purposeData.replyRef?.title && this.postData.content == this.purposeData.replyRef?.content
+        && this.receivedAnonState == this.postData.anonymous){
       cantSubmit = true;
       reason = "Es wurden keine Änderungen vorgenommen."
     }

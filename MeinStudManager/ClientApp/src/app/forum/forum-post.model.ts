@@ -16,6 +16,10 @@ export interface ForumReply {
   numUpVotes: number,
   numDownVotes: number,
   authorName: string
+
+  anonymousPost: boolean,
+  canBeDeleted: boolean,
+  canBeDeletedDeleteUntil: string; //date
 }
 
 export interface ForumTopicResultsContainer{
@@ -36,6 +40,7 @@ export interface ForumReplyResultsContainer{
 export interface ForumCreatorInput {
   title: string;
   content: string;
+  anonymous?: boolean;
 }
 
 

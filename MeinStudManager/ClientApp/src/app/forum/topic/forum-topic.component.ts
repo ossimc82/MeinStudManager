@@ -57,6 +57,8 @@ export class ForumTopicComponent implements OnInit {
     var purpose: EditorPurposeData = { type: EditorPurposeTypes.newReply};
     if(answerType == "direct"){
       purpose.type = EditorPurposeTypes.directReply
+      referrencedReply.title = this.decodeHtml(referrencedReply.title)
+      referrencedReply.content = this.decodeHtml(referrencedReply.content)
       purpose.replyRef = referrencedReply;
     }
     const dialogRef = this.dialog.open(ForumPostCreator, {
@@ -168,6 +170,7 @@ export class ForumTopicComponent implements OnInit {
       this.currentReplies = this.loadedReplyObj.items;
       this.loadingPosts = false
       this.setPostsPageAmount(this.loadedReplyObj.totalCount);
+      console.log("ALL REPLIES:", this.currentReplies)
     }, (error: any) => {
       this.loadingPosts = false
       //...
