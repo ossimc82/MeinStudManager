@@ -67,10 +67,7 @@ export class ForumTopicComponent implements OnInit {
     dialogRef.componentInstance.purposeData = purpose;
 
     dialogRef.afterClosed().subscribe(result => {
-      if(!result){
-        console.log("failure")
-      }
-      else{ //Create Topic + First Post
+      if(result){ //Create Topic + First Post
         this.submitNewReply(<ForumCreatorInput>result);
       }
     });
@@ -87,10 +84,7 @@ export class ForumTopicComponent implements OnInit {
     dialogRef.componentInstance.purposeData = purpose;
 
     dialogRef.afterClosed().subscribe(result => {
-      if(!result){
-        console.log("failure")
-      }
-      else{ //Create Topic + First Post
+      if(result){//Create Topic + First Post
         this.submitEdit(<ForumCreatorInput>result, post);
       }
     });
@@ -151,7 +145,6 @@ export class ForumTopicComponent implements OnInit {
       }
       else if (typeof datObj[Symbol.iterator] === 'function'){ //if iterable (Array)
         for(let roleobj of datObj){
-          console.log(roleobj)
           if(<string>roleobj == "Moderators" || <string>roleobj == "Administrators"){
             this.authorizedToDelete = true;
             break;

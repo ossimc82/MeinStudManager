@@ -42,7 +42,6 @@ export class ForumService {
   }
 
   setNewReply(topicId: string, newReply: ForumCreatorInput){
-    return null;
     return this.httpClient.post(this.baseUrl + this.endpoint + "/topic/" + topicId + "/new", newReply)
     .pipe(
       retry(1),
