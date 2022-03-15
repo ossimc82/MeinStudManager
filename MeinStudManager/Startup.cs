@@ -126,9 +126,47 @@ namespace MeinStudManager
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IServiceProvider serviceProvider, IWebHostEnvironment env, ApplicationDbContext dbContext)
+        public void Configure(IApplicationBuilder app, IServiceProvider serviceProvider, IWebHostEnvironment env, ApplicationDbContext dbContext, ILogger<Startup> log)
         {
-            dbContext.Database.Migrate();
+            try
+            {
+                dbContext.Database.Migrate();
+            }
+            catch (Exception e)
+            {
+                log.LogCritical("Unable to migrate current database.");
+                log.LogCritical("ErrorMessage: {Message}", e.Message);
+                log.LogCritical("Do you want to perform a DROP?\r\n" +
+                                "NOTE: ALL DATA WILL BE DELETED\r\n" +
+                                "IF NOT: you have to fix the error for yourself and choose \"NO\" (n)\r\n" +
+                                "(y/n)");
+
+                if (Console.ReadKey().Key == ConsoleKey.Y)
+                {
+                    try
+                    {
+                        log.LogInformation("Deleting database...");
+                        dbContext.Database.EnsureDeleted();
+                        log.LogInformation("Database deleted!");
+
+                        log.LogInformation("Recreating database...");
+                        dbContext.Database.Migrate();
+                        log.LogInformation("Database recreated!");
+                    }
+                    catch (Exception next)
+                    {
+                        log.LogCritical(next, "Again there went something wrong. Please restart the application!");
+                        Environment.Exit(-1);
+                        return;
+                    }
+                }
+                else
+                {
+                    Environment.Exit(-1);
+                    return;
+                }
+            }
+
 
             if (env.IsDevelopment())
             {
@@ -170,7 +208,7 @@ namespace MeinStudManager
             if (userManager.Users.Any())
                 return;
 
-            var roleManager = serviceProvider.GetService<RoleManager<IdentityRole>>()!;
+            var roleManager = serviceProvider.GetService<RoleManager<ApplicationRole>>()!;
 
             var user = new ApplicationUser
             {
@@ -184,9 +222,9 @@ namespace MeinStudManager
                 var results = new[]
                 {
                     await userManager.CreateAsync(user, "Admin.69"),
-                    await roleManager.CreateAsync(new IdentityRole(RoleHelper.Role_Administrators)),
-                    await roleManager.CreateAsync(new IdentityRole(RoleHelper.Role_Moderators)),
-                    await roleManager.CreateAsync(new IdentityRole(RoleHelper.Role_Students))
+                    await roleManager.CreateAsync(new ApplicationRole(RoleHelper.Role_Administrators)),
+                    await roleManager.CreateAsync(new ApplicationRole(RoleHelper.Role_Moderators)),
+                    await roleManager.CreateAsync(new ApplicationRole(RoleHelper.Role_Students))
                 };
 
                 if (!results.All(x => x.Succeeded))

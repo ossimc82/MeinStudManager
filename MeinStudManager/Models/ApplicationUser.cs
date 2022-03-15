@@ -65,7 +65,10 @@ namespace MeinStudManager.Models
 
     public class ApplicationRole : IdentityRole
     {
-        public List<ApplicationUserRole> UserRoles { get; set; }
+        public ApplicationRole(string name)
+            : base(name) { }
+
+        public List<ApplicationUserRole> UserRoles { get; set; } = new();
     }
 
     public class ApplicationUserRole : IdentityUserRole<string>
