@@ -22,7 +22,6 @@ namespace MeinStudManager.Data
         {
             return PagingResult<ForumReply>.CreatePagingResult(
                 db.ForumReplies.Where(_ => _.TopicId == topic).OrderBy(_ => _.CreationDate)
-                    .Include(_ => _.Topic)
                     .Include(_ => _.Author)
                     .ThenInclude(u => u.UserRoles)
                     .ThenInclude(r => r.Role)
@@ -122,8 +121,8 @@ namespace MeinStudManager.Data
 
         public async Task<string?> DeletePost(Guid topicId, Guid postId, ApplicationUser user)
         {
-            var reply = await db.ForumReplies.FirstOrDefaultAsync(_ => _.Id == postId && _.TopicId == topicId);
-            if (reply == null)
+            var reply = await db.ForumReplies.FindAsync(postId);
+            if (reply == null || reply.TopicId != topicId)
                 return $"Reply with id {postId} in topic with id {topicId} not found!";
             
             if (!reply.CanBeDeleted && !user.IsModOrAdmin)

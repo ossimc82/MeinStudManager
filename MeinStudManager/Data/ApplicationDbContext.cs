@@ -86,6 +86,8 @@ namespace MeinStudManager.Data
 
         private void CreateForumModel(ModelBuilder builder)
         {
+            builder.Entity<ForumReply>().Navigation(_ => _.Topic).AutoInclude();
+
             builder.Entity<ForumReply>()
                 .HasOne(r => r.Topic)
                 .WithMany(t => t.Replies)
