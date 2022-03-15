@@ -128,45 +128,11 @@ namespace MeinStudManager
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IServiceProvider serviceProvider, IWebHostEnvironment env, ApplicationDbContext dbContext, ILogger<Startup> log)
         {
-            try
+            if (!TryUpdateDatabase(dbContext, log))
             {
-                dbContext.Database.Migrate();
+                Environment.Exit(-1);
+                return;
             }
-            catch (Exception e)
-            {
-                log.LogCritical("Unable to migrate current database.");
-                log.LogCritical("ErrorMessage: {Message}", e.Message);
-                log.LogCritical("Do you want to perform a DROP?\r\n" +
-                                "NOTE: ALL DATA WILL BE DELETED\r\n" +
-                                "IF NOT: you have to fix the error for yourself and choose \"NO\" (n)\r\n" +
-                                "(y/n)");
-
-                if (Console.ReadKey().Key == ConsoleKey.Y)
-                {
-                    try
-                    {
-                        log.LogInformation("Deleting database...");
-                        dbContext.Database.EnsureDeleted();
-                        log.LogInformation("Database deleted!");
-
-                        log.LogInformation("Recreating database...");
-                        dbContext.Database.Migrate();
-                        log.LogInformation("Database recreated!");
-                    }
-                    catch (Exception next)
-                    {
-                        log.LogCritical(next, "Again there went something wrong. Please restart the application!");
-                        Environment.Exit(-1);
-                        return;
-                    }
-                }
-                else
-                {
-                    Environment.Exit(-1);
-                    return;
-                }
-            }
-
 
             if (env.IsDevelopment())
             {
@@ -232,6 +198,57 @@ namespace MeinStudManager
 
                 await userManager.AddToRoleAsync(user, RoleHelper.Role_Administrators);
             }).Wait();
+        }
+
+        private bool TryUpdateDatabase(DbContext dbContext, ILogger log)
+        {
+            try
+            {
+                ApplyDatabaseMigrations(dbContext, log);
+                return true;
+            }
+            catch (Exception e)
+            {
+                log.LogCritical("Unable to migrate current database.");
+                log.LogCritical("ErrorMessage: {Message}", e.Message);
+                log.LogCritical("Do you want to perform a DROP?\r\n" +
+                                "NOTE: ALL DATA WILL BE DELETED\r\n" +
+                                "IF NOT: you have to fix the error for yourself and choose \"NO\" (n)\r\n" +
+                                "(y/n)");
+
+                if (Console.ReadKey().Key != ConsoleKey.Y)
+                    return false;
+
+                try
+                {
+                    log.LogInformation("Deleting database...");
+                    dbContext.Database.EnsureDeleted();
+                    log.LogInformation("Database deleted!");
+
+                    log.LogInformation("Recreating database...");
+                    ApplyDatabaseMigrations(dbContext, log);
+                    log.LogInformation("Database recreated!");
+                }
+                catch (Exception next)
+                {
+                    log.LogCritical(next, "Again there went something wrong. Please restart the application!");
+                    return false;
+                }
+
+                return true;
+            }
+        }
+
+        private void ApplyDatabaseMigrations(DbContext dbContext, ILogger log)
+        {
+            var migrations = dbContext.Database.GetPendingMigrations().ToArray();
+            if (migrations.Length <= 0)
+                return;
+
+            log.LogInformation("Applying {Length} migration(s).", migrations.Length);
+            log.LogInformation("\t" + string.Join("\r\n\t", migrations));
+
+            dbContext.Database.Migrate();
         }
     }
 }
