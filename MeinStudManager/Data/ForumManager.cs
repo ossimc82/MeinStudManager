@@ -22,6 +22,7 @@ namespace MeinStudManager.Data
         {
             return PagingResult<ForumReply>.CreatePagingResult(
                 db.ForumReplies.Where(_ => _.TopicId == topic).OrderBy(_ => _.CreationDate)
+                    .Include(_ => _.Topic)
                     .Include(_ => _.Author)
                     .ThenInclude(u => u.UserRoles)
                     .ThenInclude(r => r.Role)

@@ -30,8 +30,8 @@ namespace MeinStudManager.Models.Forum
         [JsonPropertyName("authorId")]
         public string JsonAuthorId => ShouldDisplayPosterInfo() ? AuthorId : Guid.Empty.ToString();
 
-        public DateTime CanBeDeletedDeleteUntil => CreationDate.AddHours(3);
-        public bool CanBeDeleted => CanBeDeletedDeleteUntil >= DateTime.UtcNow && Topic.Replies.Last().Id == Id;
+        public DateTime CanBeDeletedUntil => CreationDate.AddHours(3);
+        public bool CanBeDeleted => CanBeDeletedUntil >= DateTime.UtcNow && Topic.Replies.Last().Id == Id;
 
         [JsonIgnore]
         public ApplicationUser Author { get; set; }
@@ -47,7 +47,7 @@ namespace MeinStudManager.Models.Forum
         private bool ShouldDisplayPosterInfo()
         {
             return !AnonymousPost || Requester == null ||
-                   Requester.IsModOrAdmin;
+                   Requester.IsModOrAdmin || Requester.Id == AuthorId;
         }
     }
 }
