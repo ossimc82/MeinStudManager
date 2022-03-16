@@ -163,7 +163,6 @@ export class ForumTopicComponent implements OnInit {
       this.currentReplies = this.loadedReplyObj.items;
       this.loadingPosts = false
       this.setPostsPageAmount(this.loadedReplyObj.totalCount);
-      console.log("ALL REPLIES:", this.currentReplies)
     }, (error: any) => {
       this.loadingPosts = false
       //...
