@@ -1,7 +1,7 @@
 
 #stud-header {
   padding-top: 10px;
-  background-color: aqua;
+  background-color: #0ed9f0;
   text-align: center;
   height: 100%;
 }
@@ -32,11 +32,11 @@ li a {
 }
 
 li a:hover {
-  background-color:rgba(72, 94, 192, 0.774);
+  background-color:rgba(46, 138, 255, 0.8);
 }
 
 .active-link {
-  background-color:rgba(72, 94, 192, 0.774);
+  background-color:rgba(46, 138, 255, 0.8);
 }
 
 .custom-container {
