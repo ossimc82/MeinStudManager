@@ -124,7 +124,10 @@ namespace MeinStudManager.Data
             var reply = await db.ForumReplies.FindAsync(postId);
             if (reply == null || reply.TopicId != topicId)
                 return $"Reply with id {postId} in topic with id {topicId} not found!";
-            
+
+            if (reply.AuthorId != user.Id && !user.IsModOrAdmin)
+                return "This is not your reply.";
+
             if (!reply.CanBeDeleted && !user.IsModOrAdmin)
                 return "Deletion time expired or your reply is not the last anymore. (Maybe mark as anonymous)";
 

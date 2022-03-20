@@ -122,7 +122,7 @@ namespace MeinStudManager.Controllers
         public async Task<IActionResult> AddNewGrade([FromBody] GradesPostDto data)
         {
             var user = await GetUser();
-            var grade = await db.Grades.FindAsync(user.Id, data.StudySection, data.Subject);
+            var grade = await db.Grades.FindAsync(user.Id, data.Subject);
 
             if (grade != null)
                 return BadRequest("grade already exists");
@@ -152,7 +152,7 @@ namespace MeinStudManager.Controllers
         public async Task<IActionResult> EditGrade([FromBody] GradesPostDto data)
         {
             var user = await GetUser();
-            var grade = await db.Grades.FindAsync(user.Id, data.StudySection, data.Subject);
+            var grade = await db.Grades.FindAsync(user.Id, data.Subject);
 
             if (grade == null)
                 return BadRequest("grade not found");
@@ -174,7 +174,7 @@ namespace MeinStudManager.Controllers
         public async Task<IActionResult> DeleteGrade([FromBody] GradesPostDto data)
         {
             var user = await GetUser();
-            var grade = await db.Grades.FindAsync(user.Id, data.StudySection, data.Subject);
+            var grade = await db.Grades.FindAsync(user.Id, data.Subject);
 
             if (grade == null)
                 return BadRequest("grade not found");
