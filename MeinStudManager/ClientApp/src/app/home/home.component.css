@@ -1,0 +1,9 @@
+.custom-bg {
+  background-image:linear-gradient(to right, rgba(255,0,0,0), rgba(46, 138, 255,1)),
+                    url('../../assets/images/Background.jpg');
+  background-size: 100 % ;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100%;
+}

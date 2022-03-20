@@ -16,8 +16,6 @@ export class MethodComponent implements OnInit {
   ngOnInit(): void {
   }
 
-
-
   onShowMethod() {
     this.methodEvent.emit(this.method);
   }

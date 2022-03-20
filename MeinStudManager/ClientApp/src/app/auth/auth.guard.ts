@@ -16,7 +16,7 @@ export class AuthGuard implements CanActivate {
     return this.authService.loginStatus.pipe(
       take(1),
       map(loginStatus => {
-      const istAuth = !!loginStatus;
+      const istAuth = !!loginStatus; //!! converts thruthy to true
       if (istAuth) {
         return true;
       }
