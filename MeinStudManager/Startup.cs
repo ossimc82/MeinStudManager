@@ -28,8 +28,14 @@ namespace MeinStudManager
 
             services.AddDbContext<ApplicationDbContext>(options =>
             {
-                var keyFile = File.ReadAllText("dbAccess.key").Split('\t');
-                var connStr = $"Server=api.smstuds.de;Database={keyFile[0]}_msm;Uid={keyFile[0]};Pwd={keyFile[1]};";
+                var connStr = File.Exists("dbConnstr.txt") ?
+                    File.ReadAllText("dbConnstr.txt") : null;
+
+                if (connStr is null)
+                {
+                    var keyFile = File.ReadAllText("dbAccess.key").Split('\t');
+                    connStr = $"Server=api.smstuds.de;Database={keyFile[0]}_msm;Uid={keyFile[0]};Pwd={keyFile[1]};";
+                }
                 
                 options.UseMySql(connStr, ServerVersion.AutoDetect(connStr));
             });
